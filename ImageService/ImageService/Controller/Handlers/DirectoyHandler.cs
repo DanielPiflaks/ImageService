@@ -17,7 +17,7 @@ namespace ImageService.Controller.Handlers
     public class DirectoyHandler : IDirectoryHandler
     {
         #region Members
-        private readonly string[] m_filesExtention = { "*.jpg", "*.png", "*.gif", "*.bmp" };
+        private readonly string[] m_filesExtention = { ".jpg", ".png", ".gif", ".bmp" };
         private IImageController m_controller;              // The Image Processing Controller
         private ILoggingService m_logging;
         private FileSystemWatcher m_dirWatcher;             // The Watcher of the Dir
@@ -37,6 +37,8 @@ namespace ImageService.Controller.Handlers
 
         public void StartHandleDirectory(string dirPath)
         {
+            m_path = dirPath;
+
             m_dirWatcher.Created += new FileSystemEventHandler(NewFileHandler);
             m_dirWatcher.Changed += new FileSystemEventHandler(NewFileHandler);
             m_dirWatcher.EnableRaisingEvents = true;
@@ -67,6 +69,9 @@ namespace ImageService.Controller.Handlers
         {
             string file = e.FullPath;
             string fileExtension = Path.GetExtension(file);
+
+            ServiceSettings bla = ServiceSettings.GetServiceSettings();
+            string[] blapath = bla.Handlers;
 
             if (m_filesExtention.Contains(fileExtension))
             {

@@ -51,7 +51,7 @@ namespace ImageService.Modal
 
         public string AddFile(string path, out bool result)
         {
-            if (Directory.Exists(path))
+            if (File.Exists(path))
             {
                 if (!Directory.Exists(m_OutputFolder))
                 {
