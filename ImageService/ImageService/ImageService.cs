@@ -8,11 +8,23 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using ImageService.Server;
+using ImageService.Controller;
+using ImageService.Modal;
+using ImageService.Logging;
+using System.Configuration;
 
 namespace ImageService
 {
     public partial class ImageService : ServiceBase
     {
+        #region Members
+        private ImageServer m_imageServer;
+        private IImageServiceModal m_imageServiceModal;
+        private IImageController m_controller;
+        private ILoggingService m_loggingService;
+        #endregion
+
 
         public enum ServiceState
         {
@@ -45,8 +57,9 @@ namespace ImageService
         public ImageService(string[] args)
         {
             InitializeComponent();
-            string eventSourceName = "MySource";
-            string logName = "MyNewLog";
+            ServiceSettings serviceSettings = ServiceSettings.GetServiceSettings();
+            string eventSourceName = serviceSettings.SourceName;
+            string logName = serviceSettings.LogName;
             if (args.Count() > 0)
             {
                 eventSourceName = args[0];
@@ -62,12 +75,17 @@ namespace ImageService
             }
             eventLog1.Source = eventSourceName;
             eventLog1.Log = logName;
+
+            m_imageServiceModal = new ImageServiceModal(serviceSettings.OutputDir, serviceSettings.ThumbnailSize);
+
+            m_loggingService = new LoggingService();
+            m_controller = new ImageController(m_imageServiceModal);
+            m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
         }
 
         protected override void OnStart(string[] args)
         {
             eventLog1.WriteEntry("In OnStart");
-
             // Update the service state to Start Pending.  
             ServiceStatus serviceStatus = new ServiceStatus();
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
@@ -121,6 +139,9 @@ namespace ImageService
             eventLog1.WriteEntry("In OnShutdown.");
         }
 
-        
+        private void eventLog1_EntryWritten(object sender, EntryWrittenEventArgs e)
+        {
+
+        }
     }
 }

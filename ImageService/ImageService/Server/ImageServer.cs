@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace ImageService.Server
 {
@@ -41,15 +42,21 @@ namespace ImageService.Server
                 m_logging = value;
             }
         }
+        private List<IDirectoryHandler> handlers;
         public event EventHandler<CommandRecievedEventArgs> CommandRecieved;          // The event that notifies about a new Command being recieved
         #endregion
 
-       public ImageServer(IImageController controller, ILoggingService logging)
+        public ImageServer(IImageController controller, ILoggingService logging, string[] handlersPathes)
         {
             Controller = controller;
             Logging = logging;
 
-
+            foreach (var path in handlersPathes)
+            {
+                IDirectoryHandler handler = new DirectoyHandler(m_controller, m_logging, path);
+                CommandRecieved += handler.OnCommandRecieved;
+                handler.StartHandleDirectory(path);
+            }
         }
     }
 }
