@@ -79,7 +79,11 @@ namespace ImageService.Modal
 
         private void MoveFileToOutputDir(string filePath, string outputDir, int year, int month)
         {
-            string newPath = CreateFileCorrectDir(outputDir, year, month);
+            //string newPath = CreateFileCorrectDir(outputDir, year, month);
+            string dirByYear = outputDir + @"\" + year;
+            string dirByYearMonth = dirByYear + @"\" + month;
+            string newPath = dirByYearMonth;
+            // Ensure that the target does not exist.
             File.Move(filePath, newPath);
         }
 
