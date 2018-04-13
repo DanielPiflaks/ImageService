@@ -15,6 +15,9 @@ namespace ImageService.Modal
     public class ImageServiceModal : IImageServiceModal
     {
         #region Members
+        //we init this once so that if the function is repeatedly called
+        //it isn't stressing the garbage man
+        private static Regex r = new Regex(":");
         private string m_OutputFolder;            // The Output Folder
         private int m_thumbnailSize;              // The Size Of The Thumbnail Size
         #endregion
@@ -51,64 +54,119 @@ namespace ImageService.Modal
 
         public string AddFile(string path, out bool result)
         {
-            if (File.Exists(path))
+            try
             {
-                if (!Directory.Exists(m_OutputFolder))
+                if (File.Exists(path))
                 {
-                    DirectoryInfo newOutputFolder = Directory.CreateDirectory(m_OutputFolder);
-                    newOutputFolder.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                    if (!Directory.Exists(m_OutputFolder))
+                    {
+                        DirectoryInfo newOutputFolder = Directory.CreateDirectory(m_OutputFolder);
+                        newOutputFolder.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                    }
+                    else
+                    {
+                        DirectoryInfo existingOutDir = new DirectoryInfo(m_OutputFolder);
+                        if (!existingOutDir.Attributes.HasFlag(FileAttributes.Hidden))
+                        {
+                            existingOutDir.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                        }
+                    }
+
+                    DateTime ct = GetFileCreationTime(path);
+                    int year = ct.Year;
+                    int month = ct.Month;
+
+                    string thumbnailPath = m_OutputFolder + @"\Thumbnails";
+                    if (!Directory.Exists(thumbnailPath))
+                    {
+                        Directory.CreateDirectory(thumbnailPath);
+                    }
+
+                    CreateThumbnailFile(path, thumbnailPath, year, month);
+
+                    string newPath = MoveFileToOutputDir(path, m_OutputFolder, year, month);
+
+                    result = true;
+                    string returnMessage = "File " + Path.GetFileName(path) + " moved to " + newPath + " and thumnail size created";
+                    return returnMessage;
                 }
-
-                DateTime ct = File.GetCreationTime(path);
-                int year = ct.Year;
-                int month = ct.Month;
-
-                MoveFileToOutputDir(path, m_OutputFolder, year, month);
-
-                string thumbnailPath = m_OutputFolder + @"\Thumbnails";
-                if (!Directory.Exists(thumbnailPath))
+                else
                 {
-                    Directory.CreateDirectory(thumbnailPath);
+                    throw new Exception("File does not exist");
                 }
-
-                CreateThumbnailFile(path, thumbnailPath, year, month);
             }
-            result = true;
-            return "bla";
+            catch (Exception e)
+            {
+                result = false;
+                return e.Message;
+            }
         }
 
-        private void MoveFileToOutputDir(string filePath, string outputDir, int year, int month)
+        private string MoveFileToOutputDir(string filePath, string outputDir, int year, int month)
         {
-            //string newPath = CreateFileCorrectDir(outputDir, year, month);
-            string dirByYear = outputDir + @"\" + year;
-            string dirByYearMonth = dirByYear + @"\" + month;
-            string newPath = dirByYearMonth;
-            // Ensure that the target does not exist.
-            File.Move(filePath, newPath);
+            string newPath = CreateFileCorrectDir(outputDir, year, month);
+            string fileName = Path.GetFileName(filePath);
+            newPath = newPath + "\\" + fileName;
+            if (File.Exists(newPath))
+            {
+                File.Delete(filePath);
+            }
+            else
+            {
+                File.Move(filePath, newPath);
+            }
+            return newPath;
         }
 
         private void CreateThumbnailFile(string filePath, string outputDir, int year, int month)
         {
             string newPath = CreateFileCorrectDir(outputDir, year, month);
-            Image originImage = Image.FromFile(filePath);
-            Image thumbnailSize = (Image)(new Bitmap(originImage, new Size(this.m_thumbnailSize, this.m_thumbnailSize)));
-            thumbnailSize.Save(newPath);
+            newPath = newPath + "\\" + Path.GetFileName(filePath);
+
+            if (!File.Exists(newPath))
+            {
+                Image originImage = Image.FromFile(filePath);
+                Image thumbnailSize = (Image)(new Bitmap(originImage, new Size(this.m_thumbnailSize, this.m_thumbnailSize)));
+
+                thumbnailSize.Save(newPath);
+                thumbnailSize.Dispose();
+                originImage.Dispose();
+            }
         }
 
         private string CreateFileCorrectDir(string outputDir, int year, int month)
         {
             string dirByYear = outputDir + @"\" + year;
             string dirByYearMonth = dirByYear + @"\" + month;
-            if (!Directory.Exists(dirByYear))
-            {
-                Directory.CreateDirectory(dirByYear);
-                Directory.CreateDirectory(dirByYearMonth);
-            }
-            else if (!Directory.Exists(dirByYearMonth))
-            {
-                Directory.CreateDirectory(dirByYearMonth);
-            }
+            CreateFolder(dirByYear);
+            CreateFolder(dirByYearMonth);
             return dirByYearMonth;
         }
+
+        private DateTime GetFileCreationTime(string filename)
+        {
+            DateTime currentTime = DateTime.Now;
+            TimeSpan offset = currentTime - currentTime.ToUniversalTime();
+            DateTime creationTime = File.GetLastWriteTimeUtc(filename) + offset;
+            return creationTime;
+        }
+
+        public void CreateFolder(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                try
+                {
+                    Directory.CreateDirectory(path);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Unabled to create folder " + path);
+                }
+            }
+
+        }
+
     }
+
 }
