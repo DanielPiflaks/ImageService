@@ -13,6 +13,7 @@ using ImageService.Controller;
 using ImageService.Modal;
 using ImageService.Logging;
 using System.Configuration;
+using ImageService.Logging.Modal;
 
 namespace ImageService
 {
@@ -84,6 +85,7 @@ namespace ImageService
                 m_imageServiceModal = new ImageServiceModal(serviceSettings.OutputDir, serviceSettings.ThumbnailSize);
                 //Create logging service.
                 m_loggingService = new LoggingService();
+                m_loggingService.MessageRecieved += WriteToLog;
                 //Create controller.
                 m_controller = new ImageController(m_imageServiceModal);
                 //Create image server.
@@ -155,9 +157,33 @@ namespace ImageService
             eventLog1.WriteEntry("In OnShutdown.");
         }
 
+        private void WriteToLog(object sender, MessageRecievedEventArgs e)
+        {
+            EventLogEntryType messageType;
+
+            switch (e.Status)
+            {
+                case MessageTypeEnum.INFO:
+                    messageType = EventLogEntryType.Information;
+                    break;
+                case MessageTypeEnum.WARNING:
+                    messageType = EventLogEntryType.Warning;
+                    break;
+                case MessageTypeEnum.FAIL:
+                    messageType = EventLogEntryType.Error;
+                    break;
+                default:
+                    messageType = EventLogEntryType.Information;
+                    break;
+            }
+
+            eventLog1.WriteEntry(e.Message, messageType);
+        }
+
         private void eventLog1_EntryWritten(object sender, EntryWrittenEventArgs e)
         {
-
+            eventLog1.WriteEntry(e.Entry.ToString());
         }
+
     }
 }
