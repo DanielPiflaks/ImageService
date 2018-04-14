@@ -58,9 +58,11 @@ namespace ImageService
             try
             {
                 InitializeComponent();
-
+                //Get settings from app.config.
                 ServiceSettings serviceSettings = ServiceSettings.GetServiceSettings();
+                //Set service settings.
                 string eventSourceName = serviceSettings.SourceName;
+                //Set log name.
                 string logName = serviceSettings.LogName;
                 if (args.Count() > 0)
                 {
@@ -78,11 +80,15 @@ namespace ImageService
                 eventLog1.Source = eventSourceName;
                 eventLog1.Log = logName;
 
+                //Create image service modal.
                 m_imageServiceModal = new ImageServiceModal(serviceSettings.OutputDir, serviceSettings.ThumbnailSize);
-
+                //Create logging service.
                 m_loggingService = new LoggingService();
+                //Create controller.
                 m_controller = new ImageController(m_imageServiceModal);
+                //Create image server.
                 m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
+                m_loggingService.Log("Image service created", Logging.Modal.MessageTypeEnum.INFO);
             }
             catch
             {
@@ -125,11 +131,13 @@ namespace ImageService
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
             eventLog1.WriteEntry("In onStop.");
+            //Close server.
             m_imageServer.OnCloseServer();
-
+       
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+            m_loggingService.Log("Image service closed.", Logging.Modal.MessageTypeEnum.INFO);
         }
 
         protected override void OnContinue()

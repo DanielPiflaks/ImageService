@@ -76,33 +76,39 @@ namespace ImageService
         #endregion
 
         private static ServiceSettings serviceSettings;
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         private ServiceSettings()
         {
-            const int defaultThumbnailSize = 100;
-
+            //Split handlers by ;.
             Handlers = (ConfigurationManager.AppSettings.Get("Handler").Split(';'));
             OutputDir = ConfigurationManager.AppSettings.Get("OutputDir");
             SourceName = ConfigurationManager.AppSettings.Get("SourceName");
             LogName = ConfigurationManager.AppSettings.Get("LogName");
-            if (!Int32.TryParse(ConfigurationManager.AppSettings.Get("ThumbnailSize"), out m_thumbnailSize))
-            {
-                ThumbnailSize = defaultThumbnailSize;
-            }
+            m_thumbnailSize = Int32.Parse(ConfigurationManager.AppSettings.Get("ThumbnailSize"));
         }
 
+        /// <summary>
+        /// Static function to get service settings(singleton).
+        /// </summary>
+        /// <returns></returns>
         public static ServiceSettings GetServiceSettings()
         {
             try
             {
+                //Check if settings loaded.
                 if (serviceSettings == null)
                 {
+                    //If not loaded, create service settings.
                     serviceSettings = new ServiceSettings();
                 }
+                //Return service settings.
                 return serviceSettings;
             }
             catch (Exception e)
             {
+                //If failed to create settings - throw exception.
                 throw new Exception(e.Message);
             }
 
