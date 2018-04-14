@@ -54,6 +54,10 @@ namespace ImageService
 
         private int eventId = 1;
 
+        /// <summary>
+        /// Image service constructor.
+        /// </summary>
+        /// <param name="args"></param>
         public ImageService(string[] args)
         {
             try
@@ -73,6 +77,7 @@ namespace ImageService
                 {
                     logName = args[1];
                 }
+                //Create event logger.
                 eventLog1 = new System.Diagnostics.EventLog();
                 if (!System.Diagnostics.EventLog.SourceExists(eventSourceName))
                 {
