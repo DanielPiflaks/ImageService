@@ -105,32 +105,46 @@ namespace ImageService.Modal
         private string MoveFileToOutputDir(string filePath, string outputDir, int year, int month)
         {
             string newPath = CreateFileCorrectDir(outputDir, year, month);
-            string fileName = Path.GetFileName(filePath);
-            newPath = newPath + "\\" + fileName;
-            if (File.Exists(newPath))
+            try
             {
-                File.Delete(filePath);
+                string fileName = Path.GetFileName(filePath);
+                newPath = newPath + "\\" + fileName;
+                if (File.Exists(newPath))
+                {
+                    File.Delete(filePath);
+                }
+                else
+                {
+                    File.Move(filePath, newPath);
+                }
+                return newPath;
             }
-            else
+            catch
             {
-                File.Move(filePath, newPath);
+                throw new Exception("Failed moving file: " + filePath + "to output directory");
             }
-            return newPath;
         }
 
         private void CreateThumbnailFile(string filePath, string outputDir, int year, int month)
         {
             string newPath = CreateFileCorrectDir(outputDir, year, month);
-            newPath = newPath + "\\" + Path.GetFileName(filePath);
-
-            if (!File.Exists(newPath))
+            try
             {
-                Image originImage = Image.FromFile(filePath);
-                Image thumbnailSize = (Image)(new Bitmap(originImage, new Size(this.m_thumbnailSize, this.m_thumbnailSize)));
+                newPath = newPath + "\\" + Path.GetFileName(filePath);
 
-                thumbnailSize.Save(newPath);
-                thumbnailSize.Dispose();
-                originImage.Dispose();
+                if (!File.Exists(newPath))
+                {
+                    Image originImage = Image.FromFile(filePath);
+                    Image thumbnailSize = (Image)(new Bitmap(originImage, new Size(this.m_thumbnailSize, this.m_thumbnailSize)));
+
+                    thumbnailSize.Save(newPath);
+                    thumbnailSize.Dispose();
+                    originImage.Dispose();
+                }
+            }
+            catch
+            {
+                throw new Exception("Failed creating thumbnail file for "+ filePath);
             }
         }
 
@@ -147,8 +161,15 @@ namespace ImageService.Modal
         {
             DateTime currentTime = DateTime.Now;
             TimeSpan offset = currentTime - currentTime.ToUniversalTime();
-            DateTime creationTime = File.GetLastWriteTimeUtc(filename) + offset;
-            return creationTime;
+            try
+            {
+                DateTime creationTime = File.GetLastWriteTimeUtc(filename) + offset;
+                return creationTime;
+            }
+            catch
+            {
+                throw new Exception("Failed gatting creation time from " + filename);
+            }
         }
 
         public void CreateFolder(string path)
