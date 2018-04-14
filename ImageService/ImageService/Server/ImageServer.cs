@@ -43,8 +43,8 @@ namespace ImageService.Server
                 m_logging = value;
             }
         }
-        // The event that notifies about a new Command being recieved
-        public event EventHandler<CommandRecievedEventArgs> CommandRecieved;         
+        public event EventHandler<CommandRecievedEventArgs> CommandRecieved;          // The event that notifies about a new Command being recieved
+        public event EventHandler<DirectoryCloseEventArgs> CloseServer;
         #endregion
 
         public ImageServer(IImageController controller, ILoggingService logging, string[] handlersPathes)
@@ -54,11 +54,26 @@ namespace ImageService.Server
 
             foreach (var path in handlersPathes)
             {
-                m_logging.Log("Creating handler for:" + path, MessageTypeEnum.INFO);
-                IDirectoryHandler handler = new DirectoyHandler(m_controller, m_logging, path);
-                CommandRecieved += handler.OnCommandRecieved;
-                handler.StartHandleDirectory(path);
+                try
+                {
+                    m_logging.Log("Creating handler for:" + path, MessageTypeEnum.INFO);
+                    IDirectoryHandler handler = new DirectoyHandler(m_controller, m_logging, path);
+                    CommandRecieved += handler.OnCommandRecieved;
+                    CloseServer += handler.CloseHandler;
+                    handler.StartHandleDirectory(path);
+                    m_logging.Log("Succeeded creating handler for :" + path, MessageTypeEnum.INFO);
+                }
+                catch
+                {
+                    m_logging.Log("Failed creating handler for :" + path, MessageTypeEnum.FAIL);
+                }
             }
+        }
+
+        public void OnCloseServer()
+        {
+            CloseServer?.Invoke(this, null);
+            m_logging.Log("Succeeded closing server", MessageTypeEnum.INFO);
         }
     }
 }

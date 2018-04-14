@@ -25,7 +25,6 @@ namespace ImageService
         private ILoggingService m_loggingService;
         #endregion
 
-
         public enum ServiceState
         {
             SERVICE_STOPPED = 0x00000001,
@@ -56,32 +55,39 @@ namespace ImageService
 
         public ImageService(string[] args)
         {
-            InitializeComponent();
-
-            ServiceSettings serviceSettings = ServiceSettings.GetServiceSettings();
-            string eventSourceName = serviceSettings.SourceName;
-            string logName = serviceSettings.LogName;
-            if (args.Count() > 0)
+            try
             {
-                eventSourceName = args[0];
-            }
-            if (args.Count() > 1)
-            {
-                logName = args[1];
-            }
-            eventLog1 = new System.Diagnostics.EventLog();
-            if (!System.Diagnostics.EventLog.SourceExists(eventSourceName))
-            {
-                System.Diagnostics.EventLog.CreateEventSource(eventSourceName, logName);
-            }
-            eventLog1.Source = eventSourceName;
-            eventLog1.Log = logName;
+                InitializeComponent();
 
-            m_imageServiceModal = new ImageServiceModal(serviceSettings.OutputDir, serviceSettings.ThumbnailSize);
+                ServiceSettings serviceSettings = ServiceSettings.GetServiceSettings();
+                string eventSourceName = serviceSettings.SourceName;
+                string logName = serviceSettings.LogName;
+                if (args.Count() > 0)
+                {
+                    eventSourceName = args[0];
+                }
+                if (args.Count() > 1)
+                {
+                    logName = args[1];
+                }
+                eventLog1 = new System.Diagnostics.EventLog();
+                if (!System.Diagnostics.EventLog.SourceExists(eventSourceName))
+                {
+                    System.Diagnostics.EventLog.CreateEventSource(eventSourceName, logName);
+                }
+                eventLog1.Source = eventSourceName;
+                eventLog1.Log = logName;
 
-            m_loggingService = new LoggingService();
-            m_controller = new ImageController(m_imageServiceModal);
-            m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
+                m_imageServiceModal = new ImageServiceModal(serviceSettings.OutputDir, serviceSettings.ThumbnailSize);
+
+                m_loggingService = new LoggingService();
+                m_controller = new ImageController(m_imageServiceModal);
+                m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
+            }
+            catch
+            {
+                m_loggingService.Log("Failed creating image service", Logging.Modal.MessageTypeEnum.FAIL);
+            }
         }
 
         protected override void OnStart(string[] args)
@@ -119,6 +125,7 @@ namespace ImageService
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
             eventLog1.WriteEntry("In onStop.");
+            m_imageServer.OnCloseServer();
 
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
