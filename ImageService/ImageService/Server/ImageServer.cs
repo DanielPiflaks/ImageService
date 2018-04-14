@@ -42,7 +42,6 @@ namespace ImageService.Server
                 m_logging = value;
             }
         }
-        private List<IDirectoryHandler> handlers;
         public event EventHandler<CommandRecievedEventArgs> CommandRecieved;          // The event that notifies about a new Command being recieved
         #endregion
 

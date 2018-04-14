@@ -17,7 +17,7 @@ namespace ImageService.Controller.Handlers
     public class DirectoyHandler : IDirectoryHandler
     {
         #region Members
-        private readonly string[] m_filesExtention = { ".jpg", ".png", ".gif", ".bmp", ".JPG", ".PNG", ".GIF", ".BMP" };
+        private List<string> m_filesExtention;
         private IImageController m_controller;              // The Image Processing Controller
         private ILoggingService m_logging;
         private FileSystemWatcher m_dirWatcher;             // The Watcher of the Dir
@@ -33,6 +33,10 @@ namespace ImageService.Controller.Handlers
             m_logging = loggingService;
             m_path = path;
             m_dirWatcher = new FileSystemWatcher(path);
+            m_filesExtention = new List<string>
+            {
+                ".jpg", ".png", ".gif", ".bmp"
+            };
         }
 
         public void StartHandleDirectory(string dirPath)
@@ -47,13 +51,20 @@ namespace ImageService.Controller.Handlers
 
             foreach (var file in files)
             {
-                string fileExtension = Path.GetExtension(file);
-                if (m_filesExtention.Contains(fileExtension))
+                try
                 {
-                    string[] args = { file };
-                    CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
-                        args, file);
-                    OnCommandRecieved(this, newCommand);
+                    string fileExtension = Path.GetExtension(file);
+                    if (m_filesExtention.FindIndex(x => x.Equals(fileExtension, StringComparison.OrdinalIgnoreCase)) != -1)
+                    {
+                        string[] args = { file };
+                        CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
+                            args, file);
+                        OnCommandRecieved(this, newCommand);
+                    }
+                }
+                catch (Exception)
+                {
+                    m_logging.Log("Failed to start handler directory:" + file, MessageTypeEnum.FAIL);
                 }
             }
         }
@@ -62,24 +73,42 @@ namespace ImageService.Controller.Handlers
         {
             bool result;
             string output = m_controller.ExecuteCommand(e.CommandID, e.Args, out result);
+            MessageTypeEnum messageType;
+            if (result)
+            {
+                messageType = MessageTypeEnum.INFO;
+            }
+            else
+            {
+                messageType = MessageTypeEnum.FAIL;
+            }
+            m_logging.Log(output, messageType);
         }
 
 
         public void NewFileHandler(object source, FileSystemEventArgs e)
         {
-            string file = e.FullPath;
-            string fileExtension = Path.GetExtension(file);
-
-            ServiceSettings bla = ServiceSettings.GetServiceSettings();
-            string[] blapath = bla.Handlers;
-
-            if (m_filesExtention.Contains(fileExtension))
+            try
             {
-                string[] args = { file };
-                CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
-                    args, file);
-                OnCommandRecieved(this, newCommand);
+                string file = e.FullPath;
+                string fileExtension = Path.GetExtension(file);
+
+                ServiceSettings bla = ServiceSettings.GetServiceSettings();
+                string[] blapath = bla.Handlers;
+
+                if (m_filesExtention.Contains(fileExtension))
+                {
+                    string[] args = { file };
+                    CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
+                        args, file);
+                    OnCommandRecieved(this, newCommand);
+                }
             }
+            catch (Exception)
+            {
+                m_logging.Log("Failed create new file handler for:" + e.FullPath, MessageTypeEnum.FAIL);
+            }
+
         }
     }
 }

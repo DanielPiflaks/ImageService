@@ -19,7 +19,16 @@ namespace ImageService.Commands
 
         public string Execute(string[] args, out bool result)
         {
-            return m_modal.AddFile(args[0], out result);
+            if (args.Length >= 1)
+            {
+                return m_modal.AddFile(args[0], out result);
+            }
+            else
+            {
+                result = false;
+                return "There are no args for new file command to execute";
+            }
+            
 			// The String Will Return the New Path if result = true, and will return the error message
         }
     }

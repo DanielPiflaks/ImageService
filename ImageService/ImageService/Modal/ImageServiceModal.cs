@@ -180,7 +180,7 @@ namespace ImageService.Modal
                 {
                     Directory.CreateDirectory(path);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     throw new Exception("Unabled to create folder " + path);
                 }
