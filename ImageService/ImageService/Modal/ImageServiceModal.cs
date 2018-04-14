@@ -19,7 +19,7 @@ namespace ImageService.Modal
         // The Output Folder
         private string m_OutputFolder;
         // The Size Of The Thumbnail Size  
-        private int m_thumbnailSize;             
+        private int m_thumbnailSize;
         #endregion
         #region properties
         public int ThumbnailSize
@@ -64,9 +64,9 @@ namespace ImageService.Modal
         /// <param name="result">Result of function</param>
         /// <returns></returns>
         public string AddFile(string path, out bool result)
-        {  
+        {
             try
-            {   
+            {
                 //Check if file exist.
                 if (File.Exists(path))
                 {
@@ -143,21 +143,33 @@ namespace ImageService.Modal
             string newPath = CreateFileCorrectDir(outputDir, year, month);
             try
             {
-                //Get file name.
-                string fileName = Path.GetFileName(filePath);
                 //Add file name to path.
-                newPath = newPath + "\\" + fileName;
+                string checkPath = newPath + "\\" + Path.GetFileName(filePath);
                 //Check if file already exists.
-                if (File.Exists(newPath))
+                if (File.Exists(checkPath))
                 {
-                    //Delete origin file.
-                    File.Delete(filePath);
+                    int i = 1;
+                    //Get file name without extenstion.
+                    string fileName = Path.GetFileNameWithoutExtension(filePath);
+                    //Get file extention.
+                    string fileExtention = Path.GetExtension(filePath);
+                    //Create temp path with _i.
+                    string tempPath = newPath + "\\" + fileName + "_" + i + fileExtention;
+                    //While file exists iterate over i++ and check if file exists.
+                    while (File.Exists(tempPath))
+                    {
+                        i++;
+                        tempPath = newPath + "\\" + fileName + "_" + i + fileExtention;
+                    }
+                    newPath = tempPath;
                 }
                 else
                 {
-                    //Move origin file to new place.
-                    File.Move(filePath, newPath);
+                    newPath = checkPath;
                 }
+
+                //Move origin file to new place.
+                File.Move(filePath, newPath);
                 //Return new path.
                 return newPath;
             }
@@ -181,27 +193,46 @@ namespace ImageService.Modal
             string newPath = CreateFileCorrectDir(outputDir, year, month);
             try
             {
-                //Get file name and add it to path.
-                newPath = newPath + "\\" + Path.GetFileName(filePath);
+                //Create path to check if file already exists.
+                string checkPath = newPath + "\\" + Path.GetFileName(filePath);
+                //Get origin image.
+                Image originImage = Image.FromFile(filePath);
                 //Check if thumbnail file already exists.
-                if (!File.Exists(newPath))
+                if (File.Exists(checkPath))
                 {
-                    //Get origin image.
-                    Image originImage = Image.FromFile(filePath);
-                    //Create thumbnail file.
-                    Image thumbnailSize = (Image)(new Bitmap(originImage, new Size(m_thumbnailSize, m_thumbnailSize)));
-                    //Save thumbnail file.
-                    thumbnailSize.Save(newPath);
-                    //Dispose process of thumbnailSize image.
-                    thumbnailSize.Dispose();
-                    //Dispode process of origin image.
-                    originImage.Dispose();
+                    int i = 1;
+                    //Get file name without extenstion.
+                    string fileName = Path.GetFileNameWithoutExtension(filePath);
+                    //Get file extention.
+                    string fileExtention = Path.GetExtension(filePath);
+                    //Create temp path with _i.
+                    string tempPath = newPath + "\\" + fileName + "_" + i + fileExtention;
+                    //While file exists iterate over i++ and check if file exists.
+                    while (File.Exists(tempPath))
+                    {
+                        i++;
+                        tempPath = newPath + "\\" + fileName + "_" + i + fileExtention;
+                    }
+                    newPath = tempPath;
                 }
+                else
+                {
+                    newPath = checkPath;
+                }
+
+                //Create thumbnail file.
+                Image thumbnailSize = (Image)(new Bitmap(originImage, new Size(m_thumbnailSize, m_thumbnailSize)));
+                //Save thumbnail file.
+                thumbnailSize.Save(newPath);
+                //Dispose process of thumbnailSize image.
+                thumbnailSize.Dispose();
+                //Dispode process of origin image.
+                originImage.Dispose();
             }
             catch
             {
                 //Throw exception if failed to create thumbnail size image.
-                throw new Exception("Failed creating thumbnail file for "+ filePath);
+                throw new Exception("Failed creating thumbnail file for " + filePath);
             }
         }
 
@@ -233,6 +264,8 @@ namespace ImageService.Modal
         /// <returns>DateTime of creation time</returns>
         private DateTime GetFileCreationTime(string filename)
         {
+            //Delay for bug that needs refresh DateTime.Now.
+            Thread.Sleep(50);
             //Get current time.
             DateTime currentTime = DateTime.Now;
             //Calc offset.
@@ -260,7 +293,7 @@ namespace ImageService.Modal
             if (!Directory.Exists(path))
             {
                 try
-                {   
+                {
                     //Create directory.
                     Directory.CreateDirectory(path);
                 }
