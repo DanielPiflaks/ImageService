@@ -62,21 +62,26 @@ namespace ImageService.Controller.Handlers
         public void StartHandleDirectory(string dirPath)
         {
             m_path = dirPath;
-
+            //Add watcher to directory.
             m_dirWatcher.Created += new FileSystemEventHandler(NewFileHandler);
             m_dirWatcher.Changed += new FileSystemEventHandler(NewFileHandler);
+
             m_dirWatcher.EnableRaisingEvents = true;
             try
             {
+                //Get files in directory.
                 string[] files = Directory.GetFiles(dirPath);
                 foreach (var file in files)
                 {
                     try
                     {
+                        //Extract file extension.
                         string fileExtension = Path.GetExtension(file);
+                        //Check if file has valid extension, case insesetive.
                         if (m_filesExtention.FindIndex(x => x.Equals(fileExtension, StringComparison.OrdinalIgnoreCase)) != -1)
                         {
                             string[] args = { file };
+                            //Set new command.
                             CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
                                 args, file);
                             OnCommandRecieved(this, newCommand);
@@ -105,8 +110,10 @@ namespace ImageService.Controller.Handlers
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
             bool result;
+            //Execute command by controller.
             string output = m_controller.ExecuteCommand(e.CommandID, e.Args, out result);
             MessageTypeEnum messageType;
+            //Check what kind of result- failure or success
             if (result)
             {
                 messageType = MessageTypeEnum.INFO;
@@ -115,20 +122,27 @@ namespace ImageService.Controller.Handlers
             {
                 messageType = MessageTypeEnum.FAIL;
             }
+            //Write to log according to result.
             m_logging.Log(output, messageType);
         }
 
-
+        /// <summary>
+        /// Create new file handler
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
         public void NewFileHandler(object source, FileSystemEventArgs e)
         {
             try
             {
                 string file = e.FullPath;
+                //Extract file extensions.
                 string fileExtension = Path.GetExtension(file);
-
-                if (m_filesExtention.Contains(fileExtension))
+                //Check if file has valid extension, case insesetive.
+                if (m_filesExtention.FindIndex(x => x.Equals(fileExtension, StringComparison.OrdinalIgnoreCase)) != -1)
                 {
                     string[] args = { file };
+                    //Set new command.
                     CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
                         args, file);
                     OnCommandRecieved(this, newCommand);
@@ -142,11 +156,18 @@ namespace ImageService.Controller.Handlers
 
         }
 
+        /// <summary>
+        /// Close handlers
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void CloseHandler(object sender, DirectoryCloseEventArgs e)
         {
             try
             {
+                //Disable raising events.
                 m_dirWatcher.EnableRaisingEvents = false;
+                //Remove event on command receive.
                 ((ImageServer)sender).CommandRecieved -= this.OnCommandRecieved;
                 m_logging.Log("Close handler of " + m_path, MessageTypeEnum.INFO);
             }
