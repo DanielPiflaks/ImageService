@@ -26,7 +26,25 @@ namespace ImageService.Controller
         }
         public string ExecuteCommand(int commandID, string[] args, out bool resultSuccesful)
         {
-            return commands[commandID].Execute(args, out resultSuccesful);
+            if (commands.ContainsKey(commandID))
+            {
+                Task<Tuple<string, bool>> task = new Task<Tuple<string, bool>>(() =>
+                {
+                    bool result;
+                    string resultMessage = commands[commandID].Execute(args, out result);
+                    Tuple<string, bool> output = Tuple.Create(resultMessage, result);
+                    return output;
+                });
+                task.Start();
+                task.Wait();
+                resultSuccesful = task.Result.Item2;
+                return task.Result.Item1;
+            }
+            else
+            {
+                resultSuccesful = false;
+                return "Command does not exist in dictionary.";
+            }
         }
     }
 }
