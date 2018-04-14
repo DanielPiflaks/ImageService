@@ -11,13 +11,14 @@ using ImageService.Logging;
 using ImageService.Logging.Modal;
 using System.Text.RegularExpressions;
 using ImageService.Commands;
+using ImageService.Server;
 
 namespace ImageService.Controller.Handlers
 {
     public class DirectoyHandler : IDirectoryHandler
     {
         #region Members
-        private List<string> m_filesExtention;
+        private readonly List<string> m_filesExtention;
         private IImageController m_controller;              // The Image Processing Controller
         private ILoggingService m_logging;
         private FileSystemWatcher m_dirWatcher;             // The Watcher of the Dir
@@ -32,7 +33,7 @@ namespace ImageService.Controller.Handlers
             m_controller = imageController;
             m_logging = loggingService;
             m_path = path;
-            m_dirWatcher = new FileSystemWatcher(path);
+            m_dirWatcher = new FileSystemWatcher(this.m_path);
             m_filesExtention = new List<string>
             {
                 ".jpg", ".png", ".gif", ".bmp"
@@ -64,13 +65,15 @@ namespace ImageService.Controller.Handlers
                         CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
                             args, file);
                         OnCommandRecieved(this, newCommand);
+                        m_logging.Log("Start handle file: " + file, MessageTypeEnum.INFO);
                     }
                 }
                 catch (Exception)
                 {
-                    m_logging.Log("Failed to start handler directory:" + file, MessageTypeEnum.FAIL);
+                    m_logging.Log("Failed to start handler file:" + file, MessageTypeEnum.FAIL);
                 }
             }
+            m_logging.Log("Start handle directory: " + dirPath, MessageTypeEnum.INFO);
         }
 
         /// <summary>
@@ -102,9 +105,6 @@ namespace ImageService.Controller.Handlers
                 string file = e.FullPath;
                 string fileExtension = Path.GetExtension(file);
 
-                ServiceSettings bla = ServiceSettings.GetServiceSettings();
-                string[] blapath = bla.Handlers;
-
                 if (m_filesExtention.Contains(fileExtension))
                 {
                     string[] args = { file };
@@ -112,12 +112,27 @@ namespace ImageService.Controller.Handlers
                         args, file);
                     OnCommandRecieved(this, newCommand);
                 }
+                m_logging.Log("Create new file handler for:" + e.FullPath, MessageTypeEnum.INFO);
             }
             catch (Exception)
             {
                 m_logging.Log("Failed create new file handler for:" + e.FullPath, MessageTypeEnum.FAIL);
             }
 
+        }
+
+        public void CloseHandler(object sender, DirectoryCloseEventArgs e)
+        {
+            try
+            {
+                m_dirWatcher.EnableRaisingEvents = false;
+                ((ImageServer)sender).CommandRecieved -= this.OnCommandRecieved;
+                m_logging.Log("Close handler of " + m_path, MessageTypeEnum.INFO);
+            }
+            catch
+            {
+                m_logging.Log("Failed closing handler of " + m_path, MessageTypeEnum.FAIL);
+            }
         }
     }
 }
