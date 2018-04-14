@@ -61,7 +61,7 @@ namespace ImageService.Server
             foreach (var path in handlersPathes)
             {
                 //Write to log.
-                m_logging.Log("Creating handler for:" + path, MessageTypeEnum.INFO);
+                m_logging.Log("Creating handler for: " + path, MessageTypeEnum.INFO);
                 //Create handler.
                 IDirectoryHandler handler = new DirectoyHandler(m_controller, m_logging, path);
                 //Add events.

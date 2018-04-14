@@ -33,7 +33,14 @@ namespace ImageService.Controller.Handlers
             m_controller = imageController;
             m_logging = loggingService;
             m_path = path;
-            m_dirWatcher = new FileSystemWatcher(this.m_path);
+            try
+            {
+                m_dirWatcher = new FileSystemWatcher(this.m_path);
+            }
+            catch (Exception)
+            {
+                m_logging.Log("Failed build directory watcher for: " + m_path, MessageTypeEnum.FAIL);
+            }
             m_filesExtention = new List<string>
             {
                 ".jpg", ".png", ".gif", ".bmp"
@@ -51,29 +58,35 @@ namespace ImageService.Controller.Handlers
             m_dirWatcher.Created += new FileSystemEventHandler(NewFileHandler);
             m_dirWatcher.Changed += new FileSystemEventHandler(NewFileHandler);
             m_dirWatcher.EnableRaisingEvents = true;
-
-            string[] files = Directory.GetFiles(dirPath);
-
-            foreach (var file in files)
+            try
             {
-                try
+                string[] files = Directory.GetFiles(dirPath);
+                foreach (var file in files)
                 {
-                    string fileExtension = Path.GetExtension(file);
-                    if (m_filesExtention.FindIndex(x => x.Equals(fileExtension, StringComparison.OrdinalIgnoreCase)) != -1)
+                    try
                     {
-                        string[] args = { file };
-                        CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
-                            args, file);
-                        OnCommandRecieved(this, newCommand);
-                        m_logging.Log("Start handle file: " + file, MessageTypeEnum.INFO);
+                        string fileExtension = Path.GetExtension(file);
+                        if (m_filesExtention.FindIndex(x => x.Equals(fileExtension, StringComparison.OrdinalIgnoreCase)) != -1)
+                        {
+                            string[] args = { file };
+                            CommandRecievedEventArgs newCommand = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
+                                args, file);
+                            OnCommandRecieved(this, newCommand);
+                            m_logging.Log("Start handle file: " + file, MessageTypeEnum.INFO);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        m_logging.Log("Failed to start handler file: " + file, MessageTypeEnum.FAIL);
                     }
                 }
-                catch (Exception)
-                {
-                    m_logging.Log("Failed to start handler file:" + file, MessageTypeEnum.FAIL);
-                }
+                m_logging.Log("Start handle directory: " + dirPath, MessageTypeEnum.INFO);
             }
-            m_logging.Log("Start handle directory: " + dirPath, MessageTypeEnum.INFO);
+            catch (Exception)
+            {
+
+                m_logging.Log("Failed to start handler directory: " + dirPath, MessageTypeEnum.FAIL);
+            }
         }
 
         /// <summary>
@@ -112,11 +125,11 @@ namespace ImageService.Controller.Handlers
                         args, file);
                     OnCommandRecieved(this, newCommand);
                 }
-                m_logging.Log("Create new file handler for:" + e.FullPath, MessageTypeEnum.INFO);
+                m_logging.Log("Create new file handler for: " + e.FullPath, MessageTypeEnum.INFO);
             }
             catch (Exception)
             {
-                m_logging.Log("Failed create new file handler for:" + e.FullPath, MessageTypeEnum.FAIL);
+                m_logging.Log("Failed create new file handler for: " + e.FullPath, MessageTypeEnum.FAIL);
             }
 
         }
