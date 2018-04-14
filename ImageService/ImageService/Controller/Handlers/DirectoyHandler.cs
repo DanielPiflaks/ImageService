@@ -24,9 +24,14 @@ namespace ImageService.Controller.Handlers
         private FileSystemWatcher m_dirWatcher;             // The Watcher of the Dir
         private string m_path;                              // The Path of directory
         #endregion
-
-        public event EventHandler<DirectoryCloseEventArgs> DirectoryClose;              // The Event That Notifies that the Directory is being closed
-
+        // The Event That Notifies that the Directory is being closed
+        public event EventHandler<DirectoryCloseEventArgs> DirectoryClose;              
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="imageController">Image controller.</param>
+        /// <param name="loggingService">Logging modal</param>
+        /// <param name="path">Path.</param>
         public DirectoyHandler(IImageController imageController, ILoggingService loggingService,
             string path)
         {
@@ -35,12 +40,15 @@ namespace ImageService.Controller.Handlers
             m_path = path;
             try
             {
+                //Set file systerm watcher.
                 m_dirWatcher = new FileSystemWatcher(this.m_path);
             }
             catch (Exception)
             {
-                m_logging.Log("Failed build directory watcher for: " + m_path, MessageTypeEnum.FAIL);
+                //Notify log.
+                m_logging.Log("Failed create directory watcher for: " + m_path, MessageTypeEnum.FAIL);
             }
+            //Create list of extention
             m_filesExtention = new List<string>
             {
                 ".jpg", ".png", ".gif", ".bmp"
