@@ -12,18 +12,32 @@ namespace ImageService.Controller
 {
     public class ImageController : IImageController
     {
-        private IImageServiceModal m_modal;                      // The Modal Object
+        // The Modal Object
+        private IImageServiceModal m_modal;                      
         private Dictionary<int, ICommand> commands;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="modal">Image service modal.</param>
         public ImageController(IImageServiceModal modal)
         {
-            m_modal = modal;                    // Storing the Modal Of The System
+            // Storing the Modal Of The System
+            m_modal = modal;                    
             commands = new Dictionary<int, ICommand>()
             {
                    // For Now will contain NEW_FILE_COMMAND
                 { (int) CommandEnum.NewFileCommand,  new NewFileCommand(modal)}
             };
         }
+
+        /// <summary>
+        /// Executing the Command Requet
+        /// </summary>
+        /// <param name="commandID">Command ID</param>
+        /// <param name="args">Arguments for command</param>
+        /// <param name="result">Result of execution</param>
+        /// <returns></returns>
         public string ExecuteCommand(int commandID, string[] args, out bool resultSuccesful)
         {
             if (commands.ContainsKey(commandID))

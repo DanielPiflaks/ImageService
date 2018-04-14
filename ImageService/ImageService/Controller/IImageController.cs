@@ -8,6 +8,13 @@ namespace ImageService.Controller
 {
     public interface IImageController
     {
-        string ExecuteCommand(int commandID, string[] args, out bool result);          // Executing the Command Requet
+        /// <summary>
+        /// Executing the Command Requet
+        /// </summary>
+        /// <param name="commandID">Command ID</param>
+        /// <param name="args">Arguments for command</param>
+        /// <param name="result">Result of execution</param>
+        /// <returns></returns>
+        string ExecuteCommand(int commandID, string[] args, out bool result);
     }
 }

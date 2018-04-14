@@ -12,24 +12,35 @@ namespace ImageService.Commands
     {
         private IImageServiceModal m_modal;
 
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="modal">Image service modal.</param>
         public NewFileCommand(IImageServiceModal modal)
         {
-            m_modal = modal;            // Storing the Modal
+            // Storing the Modal
+            m_modal = modal;
         }
 
+        /// <summary>
+        /// The Function That will Execute The command
+        /// </summary>
+        /// <param name="args"> Arguments to execute command.</param>
+        /// <param name="result">Out for result of execution.</param>
+        /// <returns></returns>
         public string Execute(string[] args, out bool result)
         {
+            //Check if there are enough arguments to add file.
             if (args.Length >= 1)
             {
                 return m_modal.AddFile(args[0], out result);
             }
             else
             {
+                //If not, set result to false and return corresponding message.
                 result = false;
                 return "There are no args for new file command to execute";
             }
-            
-			// The String Will Return the New Path if result = true, and will return the error message
         }
     }
 }

@@ -39,6 +39,10 @@ namespace ImageService.Controller.Handlers
             };
         }
 
+        /// <summary>
+        /// The Function Recieves the directory to Handle
+        /// </summary>
+        /// <param name="dirPath">Directory path to handle.</param>
         public void StartHandleDirectory(string dirPath)
         {
             m_path = dirPath;
@@ -69,6 +73,11 @@ namespace ImageService.Controller.Handlers
             }
         }
 
+        /// <summary>
+        /// The Event that will be activated upon new Command
+        /// </summary>
+        /// <param name="sender">Who asked for command.</param>
+        /// <param name="e">Comand recieved event arguments.</param>
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
             bool result;
