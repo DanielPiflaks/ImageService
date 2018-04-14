@@ -43,7 +43,8 @@ namespace ImageService.Server
                 m_logging = value;
             }
         }
-        public event EventHandler<CommandRecievedEventArgs> CommandRecieved;          // The event that notifies about a new Command being recieved
+        // The event that notifies about a new Command being recieved
+        public event EventHandler<CommandRecievedEventArgs> CommandRecieved;         
         #endregion
 
         public ImageServer(IImageController controller, ILoggingService logging, string[] handlersPathes)
