@@ -85,12 +85,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\ImageService.exe.config" />
-    <None Include="bin\Debug\ImageService.InstallLog" />
-    <None Include="bin\Debug\ImageService.InstallState" />
-    <None Include="bin\Debug\ImageService.vshost.exe.config" />
-    <None Include="bin\Debug\ImageService.vshost.exe.manifest" />
-    <None Include="bin\Debug\InstallUtil.InstallLog" />
-    <None Include="ImageService\App.config" />
+    <None Include="ImageService\App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ImageService\ImageService.resx">
@@ -106,7 +103,6 @@
   <ItemGroup>
     <Content Include="bin\Debug\ImageService.exe" />
     <Content Include="bin\Debug\ImageService.pdb" />
-    <Content Include="bin\Debug\ImageService.vshost.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
