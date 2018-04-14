@@ -57,6 +57,7 @@ namespace ImageService
         public ImageService(string[] args)
         {
             InitializeComponent();
+
             ServiceSettings serviceSettings = ServiceSettings.GetServiceSettings();
             string eventSourceName = serviceSettings.SourceName;
             string logName = serviceSettings.LogName;

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using ImageService.Logging.Modal;
 
 namespace ImageService.Server
 {
@@ -52,6 +53,7 @@ namespace ImageService.Server
 
             foreach (var path in handlersPathes)
             {
+                m_logging.Log("Creating handler for:" + path, MessageTypeEnum.INFO);
                 IDirectoryHandler handler = new DirectoyHandler(m_controller, m_logging, path);
                 CommandRecieved += handler.OnCommandRecieved;
                 handler.StartHandleDirectory(path);

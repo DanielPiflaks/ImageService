@@ -93,11 +93,19 @@ namespace ImageService
 
         public static ServiceSettings GetServiceSettings()
         {
-            if (serviceSettings == null)
+            try
             {
-                serviceSettings = new ServiceSettings();
+                if (serviceSettings == null)
+                {
+                    serviceSettings = new ServiceSettings();
+                }
+                return serviceSettings;
             }
-            return serviceSettings;
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
         }
 
     }
