@@ -7,6 +7,31 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Log" Foreground="#c43081" FontSize="35" FontFamily="Century Gothic" FontWeight="Bold" TextAlignment="Center" >
+        </TextBlock>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Grid.Row="0" BorderBrush="#621840" BorderThickness="1">
+                <TextBlock Text="Type" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontFamily="Ariel"/>
+            </Border>
+            <Border Grid.Column="1" Grid.Row="0" BorderBrush="#621840" BorderThickness="0 1 1 1">
+                <TextBlock Text="Message" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14" FontFamily="Ariel"/>
+            </Border>
+            <Border Grid.Column="1" Grid.Row="1" BorderBrush="#621840" BorderThickness="0 0 1 1"/>
+            <Border Grid.Column="0" Grid.Row="1" BorderBrush="#621840" BorderThickness="1 0 1 1"/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </UserControl>
