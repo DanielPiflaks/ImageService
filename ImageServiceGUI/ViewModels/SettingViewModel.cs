@@ -20,6 +20,7 @@ namespace ImageServiceGUI.ViewModels
             }
         }
 
+        
         public SettingViewModel()
         {
             this.SettingsModel = new SettingsModel();
