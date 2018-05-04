@@ -8,7 +8,7 @@ namespace Communication
 {
     class HandleClient
     {
-        public static void HandleClientRequest(int bla)
+        public static void HandleClientRequest(object recievedObject)
         {
 
         }

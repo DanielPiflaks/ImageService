@@ -54,10 +54,10 @@ namespace Communication
             Listener.Start();
             Logging.Log("TCP Starting to listen for clients", MessageTypeEnum.INFO);
             Socket s = Listener.AcceptSocket();
-            byte[] data = new byte[100];
-            var k = s.Receive(data);
-
-            var t = new Thread(() => HandleClient.HandleClientRequest(k));
+            Message newMessage = new Message();
+            var k = s.Receive(newMessage.Data);
+            var objectRecieved = MessageDecoder.Deserialize(newMessage);
+            var t = new Thread(() => HandleClient.HandleClientRequest(objectRecieved));
             t.Start();
         }
 
