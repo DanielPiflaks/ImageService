@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using 
+
 
 namespace ImageServiceGUI.Models
 {
@@ -67,7 +69,6 @@ namespace ImageServiceGUI.Models
 
         public SettingsModel()
         {
-
         }
     }
 }

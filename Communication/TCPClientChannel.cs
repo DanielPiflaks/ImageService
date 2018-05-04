@@ -10,7 +10,7 @@ using ImageService.Infrastructure.Enums;
 
 namespace Communication
 {
-    class TCPClientChannel
+    public class TCPClientChannel
     {
         public const string IP = "127.0.0.1";
         public const int PORT = 8888;
