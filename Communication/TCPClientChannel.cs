@@ -55,9 +55,10 @@ namespace Communication
             }
         }
 
-        public void Send(CommandEnum cmd, String[] args)
-        {
-
+        public void Send(CommandEnum cmd, List<String> args)
+        { 
+            CommandMessage msg = new CommandMessage(cmd, args);
+            MessageDecoder.Serialize(msg);
         }
 
     }
