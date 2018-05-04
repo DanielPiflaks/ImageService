@@ -40,9 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandMessage.cs" />
     <Compile Include="TCPClientChannel.cs" />
     <Compile Include="TCPServerChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ImageService\ImageService.csproj">
+      <Project>{1942FB1E-5EC0-470A-9608-F22A858B73C3}</Project>
+      <Name>ImageService</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
