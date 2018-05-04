@@ -7,7 +7,7 @@ using System.Configuration;
 
 namespace ImageService
 {
-    pubilc class ServiceSettings
+    public class ServiceSettings
     {
         #region Members
         private string[] m_handlers;

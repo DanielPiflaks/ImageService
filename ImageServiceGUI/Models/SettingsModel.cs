@@ -5,8 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using 
-
+using Communication;
 
 namespace ImageServiceGUI.Models
 {
@@ -69,6 +68,19 @@ namespace ImageServiceGUI.Models
 
         public SettingsModel()
         {
+            var settings = TCPClientChannel.GetTCPClientChannel().SendAmdReceive(ImageService.Infrastructure.Enums.CommandEnum.GetConfigCommand, null);
+            if (settings is ServiceSettings)
+            {
+                ServiceSettings settingsObj = (ServiceSettings) settings;
+                OutputDir = settingsObj.OutputDir;
+                ThumbnailSize = settingsObj.ThumbnailSize;
+                LogName = settingsObj.LogName;
+                SourceName = settingsObj.SourceName;
+            }
+            else
+            {
+                throw new Exception("Error");
+            }
         }
     }
 }
