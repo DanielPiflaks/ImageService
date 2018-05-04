@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Communication
+namespace ImageService.Logging
 {
-    public class Message
+    public class Class1
     {
-        public byte[] Data { get; set; }
     }
-
 }

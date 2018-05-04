@@ -62,7 +62,7 @@ namespace Communication
             stm.Write(message.Data ,0, message.Data.Length);
         }
 
-        public object SendAmdReceive(CommandEnum cmd, List<String> args)
+        public object SendAndReceive(CommandEnum cmd, List<String> args)
         {
             CommandMessage msg = new CommandMessage(cmd, args);
             var message = MessageDecoder.Serialize(msg);

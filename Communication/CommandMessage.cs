@@ -9,7 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Communication
 {
-    class CommandMessage
+    public class CommandMessage
     {
         private CommandEnum m_cmdEnum;
 

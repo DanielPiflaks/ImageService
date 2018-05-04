@@ -14,6 +14,9 @@ using ImageService.Modal;
 using ImageService.Logging;
 using System.Configuration;
 using ImageService.Logging.Modal;
+using Communication;
+using System.Threading;
+using System.Net.Sockets;
 
 namespace ImageService
 {
@@ -96,10 +99,25 @@ namespace ImageService
                 //Create image server.
                 m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
                 m_loggingService.Log("Image service created", Logging.Modal.MessageTypeEnum.INFO);
+                TCPServerChannel tcpServerChannel = new TCPServerChannel(8000, m_loggingService);
+                
+                var t = new Thread(() => ListenToClients(tcpServerChannel));
+                //t.Start();
             }
             catch
             {
                 m_loggingService.Log("Failed creating image service", Logging.Modal.MessageTypeEnum.FAIL);
+            }
+        }
+
+        public static void ListenToClients(TCPServerChannel tcpServerChannel)
+        {
+            while (true)
+            {
+                Tuple<Message, Socket> receivedMsg = tcpServerChannel.StartListening();
+                var objectRecieved = MessageDecoder.Deserialize(receivedMsg.Item1);
+                var t = new Thread(() => HandleGuiRequest.handle(objectRecieved, tcpServerChannel, receivedMsg.Item2));
+                t.Start();
             }
         }
 

@@ -68,7 +68,7 @@ namespace ImageServiceGUI.Models
 
         public SettingsModel()
         {
-            var settings = TCPClientChannel.GetTCPClientChannel().SendAmdReceive(ImageService.Infrastructure.Enums.CommandEnum.GetConfigCommand, null);
+            var settings = TCPClientChannel.GetTCPClientChannel().SendAndReceive(ImageService.Infrastructure.Enums.CommandEnum.GetConfigCommand, null);
             if (settings is ServiceSettings)
             {
                 ServiceSettings settingsObj = (ServiceSettings) settings;

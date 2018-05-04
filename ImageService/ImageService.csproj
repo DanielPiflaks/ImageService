@@ -51,12 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImageService.Infrastructure\ServiceSettings.cs" />
-    <Compile Include="ImageService.Infrastructure\Enums\CommandEnum.cs" />
-    <Compile Include="ImageService.Logging\ILoggingService.cs" />
-    <Compile Include="ImageService.Logging\LoggingService.cs" />
-    <Compile Include="ImageService.Logging\Modal\MessageRecievedEventArgs.cs" />
-    <Compile Include="ImageService.Logging\Modal\MessageTypeEnum.cs" />
+    <Compile Include="HandleGuiRequest.cs" />
     <Compile Include="ImageService\Commands\ICommand.cs" />
     <Compile Include="ImageService\Commands\NewFileCommand.cs" />
     <Compile Include="ImageService\Controller\Handlers\DirectoyHandler.cs" />
@@ -82,6 +77,7 @@
     </Compile>
     <Compile Include="ImageService\Server\ImageServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\ImageService.exe.config" />
@@ -107,6 +103,20 @@
     <Content Include="bin\Debug\ImageService.exe" />
     <Content Include="bin\Debug\ImageService.pdb" />
     <Content Include="bin\Debug\ImageService.vshost.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Communication\Communication.csproj">
+      <Project>{546b3913-c4f1-4b96-937f-eb7efb8c39b8}</Project>
+      <Name>Communication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImageService.Infrastructure\ImageService.Infrastructure.csproj">
+      <Project>{a4d42a93-7dff-4cf7-979c-7fc64b305b49}</Project>
+      <Name>ImageService.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImageService.Logging\ImageService.Logging.csproj">
+      <Project>{8150a492-e868-4220-bbe8-9451525f24df}</Project>
+      <Name>ImageService.Logging</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

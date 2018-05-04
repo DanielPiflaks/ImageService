@@ -36,9 +36,9 @@ namespace Communication
 
         #endregion
 
-        public TCPServerChannel(string ip, int port, ILoggingService logging)
+        public TCPServerChannel(int port, ILoggingService logging)
         {
-            IP = IPAddress.Parse(ip);
+            IP = IPAddress.Parse(GetLocalIPAddress());
             Port = port;
             Logging = logging;
 
@@ -49,21 +49,32 @@ namespace Communication
             listOfSockets = new List<Socket>();
         }
 
-        public static void StartListening()
+        public Tuple<Message, Socket> StartListening()
         {
             Listener.Start();
             Logging.Log("TCP Starting to listen for clients", MessageTypeEnum.INFO);
             Socket s = Listener.AcceptSocket();
             Message newMessage = new Message();
-            var k = s.Receive(newMessage.Data);
-            var objectRecieved = MessageDecoder.Deserialize(newMessage);
-            var t = new Thread(() => HandleClient.HandleClientRequest(objectRecieved));
-            t.Start();
+            s.Receive(newMessage.Data);
+            return Tuple.Create(newMessage, s);
         }
 
-        public static void Send(object message)
+        public void SendMessage(Message msg, Socket s)
         {
+            s.Send(msg.Data, 0);
+        }
 
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
     }
 }

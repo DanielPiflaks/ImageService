@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Communication
 {
-    class MessageDecoder
+    public class MessageDecoder
     {
         public static Message Serialize(object anySerializableObject)
         {
