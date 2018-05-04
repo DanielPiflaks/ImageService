@@ -118,6 +118,12 @@
     <Folder Include="Communication\" />
     <Folder Include="Convertors\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ImageService\ImageService.csproj">
+      <Project>{1942FB1E-5EC0-470A-9608-F22A858B73C3}</Project>
+      <Name>ImageService</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
