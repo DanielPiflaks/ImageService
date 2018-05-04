@@ -60,13 +60,14 @@ namespace Communication
             
         }
 
-        public static CommandMessage Serialize(object anySerializableObject)
+        /*public static CommandMessage Serialize(object anySerializableObject)
         {
             using (var memoryStream = new MemoryStream())
             {
                 (new BinaryFormatter()).Serialize(memoryStream, anySerializableObject);
-                return new CommandMessage { Data = memoryStream.ToArray() };
+                //return new CommandMessage { Data = memoryStream.ToArray() };
+                int t = 9;
             }
-        }
+        }*/
     }
 }
