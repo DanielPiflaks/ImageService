@@ -119,6 +119,10 @@
     <Folder Include="Convertors\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Communication\Communication.csproj">
+      <Project>{546b3913-c4f1-4b96-937f-eb7efb8c39b8}</Project>
+      <Name>Communication</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ImageService\ImageService.csproj">
       <Project>{1942FB1E-5EC0-470A-9608-F22A858B73C3}</Project>
       <Name>ImageService</Name>

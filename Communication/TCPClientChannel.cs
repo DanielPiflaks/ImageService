@@ -10,7 +10,7 @@ using ImageService.Infrastructure.Enums;
 
 namespace Communication
 {
-    class TCPClientChannel
+    public class TCPClientChannel
     {
         public const string IP = "127.0.0.1";
         public const int PORT = 8888;
@@ -58,7 +58,27 @@ namespace Communication
         public void Send(CommandEnum cmd, List<String> args)
         { 
             CommandMessage msg = new CommandMessage(cmd, args);
-            MessageDecoder.Serialize(msg);
+            var message = MessageDecoder.Serialize(msg);
+            stm.Write(message.Data ,0, message.Data.Length);
+        }
+
+        public object SendAmdReceive(CommandEnum cmd, List<String> args)
+        {
+            CommandMessage msg = new CommandMessage(cmd, args);
+            var message = MessageDecoder.Serialize(msg);
+            stm.Write(message.Data, 0, message.Data.Length);
+
+            Message newMsg = new Message();
+            stm.Read(newMsg.Data, 0, newMsg.Data.Length);
+            var rceivedMsg = MessageDecoder.Deserialize(newMsg);
+            return rceivedMsg;
+        }
+
+        public void receive()
+        {
+            Message newMsg = new Message();
+            stm.Read(newMsg.Data, 0, newMsg.Data.Length);
+            var message = MessageDecoder.Deserialize(newMsg);
         }
 
     }
