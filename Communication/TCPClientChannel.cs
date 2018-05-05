@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -12,8 +13,8 @@ namespace Communication
 {
     public class TCPClientChannel
     {
-        public const string IP = "127.0.0.1";
-        public const int PORT = 8888;
+        public const string IP = "10.0.0.49";
+        public const int PORT = 8000;
 
         //members.
         private static TCPClientChannel clientTcp;
@@ -34,9 +35,11 @@ namespace Communication
         /// </summary>
         private TCPClientChannel()
         {
-            TCPClient = new TcpClient();
-            TCPClient.Connect(IP, PORT);
-            stm = TCPClient.GetStream();
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(IP), PORT);
+            TcpClient client = new TcpClient();
+            client.Connect(ep);
+
+            stm = client.GetStream();
         }
 
         public static TCPClientChannel GetTCPClientChannel()
