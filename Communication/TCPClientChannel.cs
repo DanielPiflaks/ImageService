@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using ImageService.Infrastructure.Enums;
+using Newtonsoft.Json;
 
 namespace Communication
 {
@@ -59,17 +60,24 @@ namespace Communication
         }
 
         public void Send(CommandEnum cmd, List<String> args)
-        { 
-            CommandMessage msg = new CommandMessage(cmd, args);
-            var message = MessageDecoder.Serialize(msg);
-            stm.Write(message.Data ,0, message.Data.Length);
+        {
+            
+            using (BinaryWriter writer = new BinaryWriter(stm))
+            {
+
+                CommandMessage msg = new CommandMessage(cmd, args);
+                String JsonMsg = JsonConvert.SerializeObject(msg);
+                writer.Write(JsonMsg);
+            }
         }
 
         public object SendAndReceive(CommandEnum cmd, List<String> args)
         {
+            Send(cmd, args);
+            /*
             CommandMessage msg = new CommandMessage(cmd, args);
             var message = MessageDecoder.Serialize(msg);
-            stm.Write(message.Data, 0, message.Data.Length);
+            stm.Write(message.Data, 0, message.Data.Length);*/
 
             Message newMsg = new Message();
             stm.Read(newMsg.Data, 0, newMsg.Data.Length);
