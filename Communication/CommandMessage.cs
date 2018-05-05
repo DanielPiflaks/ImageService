@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Communication
 {
-    [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class CommandMessage : ISerializable
     {
         private CommandEnum m_cmdEnum;
