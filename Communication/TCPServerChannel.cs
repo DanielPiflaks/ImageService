@@ -1,5 +1,6 @@
 ﻿using ImageService.Logging;
 using ImageService.Logging.Modal;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,8 +62,9 @@ namespace Communication
             using (BinaryReader reader = new BinaryReader(stream))
             using (BinaryWriter writer = new BinaryWriter(stream))
             {
-                Console.WriteLine("Waiting for a number");
-                //int num = reader.ReadBytes();
+                string commandLine = reader.ReadString();
+                CommandMessage cmdMessage = JsonConvert.DeserializeObject<CommandMessage>(commandLine);
+
                 Console.WriteLine("Number accepted");
                 //num *= 2;
                 //writer.Write(num);
