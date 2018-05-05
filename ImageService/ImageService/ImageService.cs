@@ -17,6 +17,7 @@ using ImageService.Logging.Modal;
 using Communication;
 using System.Threading;
 using System.Net.Sockets;
+using System.IO;
 
 namespace ImageService
 {
@@ -99,10 +100,6 @@ namespace ImageService
                 //Create image server.
                 m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
                 m_loggingService.Log("Image service created", Logging.Modal.MessageTypeEnum.INFO);
-                TCPServerChannel tcpServerChannel = new TCPServerChannel(8000, m_loggingService);
-                
-                var t = new Thread(() => ListenToClients(tcpServerChannel));
-                t.Start();
             }
             catch
             {
@@ -114,9 +111,8 @@ namespace ImageService
         {
             while (true)
             {
-                //Tuple<Message, Socket> receivedMsg = tcpServerChannel.StartListening();
-                //var objectRecieved = MessageDecoder.Deserialize(receivedMsg.Item1);
-                //var t = new Thread(() => HandleGuiRequest.handle(objectRecieved, tcpServerChannel, receivedMsg.Item2));
+                Tuple<CommandMessage, Stream> receivedMsg = tcpServerChannel.StartListening();
+                var t = new Thread(() => HandleGuiRequest.handle(receivedMsg.Item1, tcpServerChannel, receivedMsg.Item2));
                 //t.Start();
             }
         }
@@ -139,6 +135,10 @@ namespace ImageService
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
+            TCPServerChannel tcpServerChannel = new TCPServerChannel(5322, m_loggingService);
+            var t = new Thread(() => ListenToClients(tcpServerChannel));
+            t.Start();
         }
 
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
