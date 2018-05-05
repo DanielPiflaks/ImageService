@@ -51,13 +51,23 @@ namespace Communication
 
         }
 
-        public object StartListening()
+        public Tuple<CommandMessage, Stream> StartListening()
         {
-            TcpClient client = Listener.AcceptTcpClient();
-            //Logging.Log("TCP Starting to listen for clients", MessageTypeEnum.INFO);
+            Logging.Log("Check", MessageTypeEnum.INFO);
+            TcpClient client = null;
+            try
+            {
+                client = Listener.AcceptTcpClient();
+            }
+            catch (Exception e)
+            {
+                Logging.Log(e.Message, MessageTypeEnum.INFO);
+            }
+            
+            Logging.Log("TCP Starting to listen for clients", MessageTypeEnum.INFO);
 
+            NetworkStream stream = client.GetStream();
             CommandMessage cmdMessage;
-            using (NetworkStream stream = client.GetStream())
             using (BinaryReader reader = new BinaryReader(stream))
             using (BinaryWriter writer = new BinaryWriter(stream))
             {
@@ -65,12 +75,16 @@ namespace Communication
                 cmdMessage = JsonConvert.DeserializeObject<CommandMessage>(commandLine);
             }
         
-            return cmdMessage;
+            return Tuple.Create<CommandMessage, Stream>(cmdMessage, stream);
         }
 
-        public void SendMessage(byte[] msg, Socket s)
+        public void SendMessage(object msg, Stream stream)
         {
-            s.Send(msg, 0);
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            {
+                String JsonMsg = JsonConvert.SerializeObject(msg);
+                writer.Write(JsonMsg);
+            }
         }
     }
 }
