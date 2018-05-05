@@ -102,7 +102,7 @@ namespace ImageService
                 TCPServerChannel tcpServerChannel = new TCPServerChannel(8000, m_loggingService);
                 
                 var t = new Thread(() => ListenToClients(tcpServerChannel));
-                //t.Start();
+                t.Start();
             }
             catch
             {

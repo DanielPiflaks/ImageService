@@ -2,6 +2,7 @@
 using ImageService.Logging.Modal;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -38,23 +39,37 @@ namespace Communication
 
         public TCPServerChannel(int port, ILoggingService logging)
         {
-            IP = IPAddress.Parse(GetLocalIPAddress());
+            IP = IPAddress.Parse("0.0.0.0");
             Port = port;
             Logging = logging;
-
-            Listener = new TcpListener(IP, port);
+            IPEndPoint ep = new IPEndPoint(IP, port);
+            Listener = new TcpListener(ep);
+            Listener.Start();
             //Write to log.
-            Logging.Log("Creating TCP Server channel", MessageTypeEnum.INFO);
+            //Logging.Log("Creating TCP Server channel", MessageTypeEnum.INFO);
 
-            listOfSockets = new List<Socket>();
         }
 
         public Tuple<Message, Socket> StartListening()
         {
-            Listener.Start();
-            Logging.Log("TCP Starting to listen for clients", MessageTypeEnum.INFO);
-            Socket s = Listener.AcceptSocket();
+            TcpClient client = Listener.AcceptTcpClient();
+            //Logging.Log("TCP Starting to listen for clients", MessageTypeEnum.INFO);
+
             Message newMessage = new Message();
+
+            using (NetworkStream stream = client.GetStream())
+            using (BinaryReader reader = new BinaryReader(stream))
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            {
+                Console.WriteLine("Waiting for a number");
+                //int num = reader.ReadBytes();
+                Console.WriteLine("Number accepted");
+                //num *= 2;
+                //writer.Write(num);
+            }
+
+            Socket s = Listener.AcceptSocket();
+            
             s.Receive(newMessage.Data);
             return Tuple.Create(newMessage, s);
         }

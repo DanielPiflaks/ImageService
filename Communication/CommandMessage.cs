@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using ImageService.Infrastructure.Enums;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace Communication
 {
-    public class CommandMessage
+    [Serializable]
+    public class CommandMessage : ISerializable
     {
         private CommandEnum m_cmdEnum;
 
@@ -31,6 +33,17 @@ namespace Communication
         {
             m_cmdEnum = commandEnum;
             m_args = args;
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentException("info");
+            }
+
+            info.AddValue("CmdEnum", m_cmdEnum);
+            info.AddValue("ArgsList", m_args);           
         }
     }
 }
