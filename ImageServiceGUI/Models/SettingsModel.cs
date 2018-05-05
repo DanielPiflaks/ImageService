@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Communication;
+using Newtonsoft.Json;
 
 namespace ImageServiceGUI.Models
 {
@@ -68,7 +69,9 @@ namespace ImageServiceGUI.Models
 
         public SettingsModel()
         {
-            var settings = TCPClientChannel.GetTCPClientChannel().SendAndReceive(ImageService.Infrastructure.Enums.CommandEnum.GetConfigCommand, null);
+            string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(ImageService.Infrastructure.Enums.CommandEnum.GetConfigCommand, null);
+            ServiceSettings settings = JsonConvert.DeserializeObject<ServiceSettings>(settingsMsg);
+
             if (settings is ServiceSettings)
             {
                 ServiceSettings settingsObj = (ServiceSettings) settings;

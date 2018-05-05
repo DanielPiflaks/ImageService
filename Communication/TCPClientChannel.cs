@@ -61,7 +61,6 @@ namespace Communication
 
         public void Send(CommandEnum cmd, List<String> args)
         {
-            
             using (BinaryWriter writer = new BinaryWriter(stm))
             {
 
@@ -71,21 +70,19 @@ namespace Communication
             }
         }
 
-        public object SendAndReceive(CommandEnum cmd, List<String> args)
+        public string SendAndReceive(CommandEnum cmd, List<String> args)
         {
             Send(cmd, args);
-            /*
-
-            /*Message newMsg = new Message();
-            stm.Read(newMsg.Data, 0, newMsg.Data.Length);
-            var rceivedMsg = MessageDecoder.Deserialize(newMsg);*/
-            return null;
+            return receive();
         }
 
-        public void receive()
-        {/*
-            stm.Read(newMsg.Data, 0, newMsg.Data.Length);
-            var message = MessageDecoder.Deserialize(newMsg);*/
+        public string receive()
+        {
+            using (BinaryReader reader = new BinaryReader(stm))
+            {
+                String JsonMsg = reader.ReadString();
+                return JsonMsg;
+            }
         }
 
     }
