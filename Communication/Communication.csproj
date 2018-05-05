@@ -47,10 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessageDecoder.cs" />
     <Compile Include="CommandMessage.cs" />
     <Compile Include="HandleClient.cs" />
-    <Compile Include="Message.cs" />
     <Compile Include="TCPClientChannel.cs" />
     <Compile Include="TCPServerChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

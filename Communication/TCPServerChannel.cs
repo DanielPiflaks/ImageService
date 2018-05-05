@@ -51,47 +51,26 @@ namespace Communication
 
         }
 
-        public Tuple<Message, Socket> StartListening()
+        public object StartListening()
         {
             TcpClient client = Listener.AcceptTcpClient();
             //Logging.Log("TCP Starting to listen for clients", MessageTypeEnum.INFO);
 
-            Message newMessage = new Message();
-
+            CommandMessage cmdMessage;
             using (NetworkStream stream = client.GetStream())
             using (BinaryReader reader = new BinaryReader(stream))
             using (BinaryWriter writer = new BinaryWriter(stream))
             {
                 string commandLine = reader.ReadString();
-                CommandMessage cmdMessage = JsonConvert.DeserializeObject<CommandMessage>(commandLine);
-
-                Console.WriteLine("Number accepted");
-                //num *= 2;
-                //writer.Write(num);
+                cmdMessage = JsonConvert.DeserializeObject<CommandMessage>(commandLine);
             }
-
-            Socket s = Listener.AcceptSocket();
-            
-            s.Receive(newMessage.Data);
-            return Tuple.Create(newMessage, s);
+        
+            return cmdMessage;
         }
 
-        public void SendMessage(Message msg, Socket s)
+        public void SendMessage(byte[] msg, Socket s)
         {
-            s.Send(msg.Data, 0);
-        }
-
-        public static string GetLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
+            s.Send(msg, 0);
         }
     }
 }
