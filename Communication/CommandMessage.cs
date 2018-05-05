@@ -7,6 +7,7 @@ using ImageService.Infrastructure.Enums;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Communication
 {
@@ -14,7 +15,7 @@ namespace Communication
     public class CommandMessage : ISerializable
     {
         private CommandEnum m_cmdEnum;
-
+        [JsonProperty(PropertyName = "CmdEnum")]
         public CommandEnum CmdEnum
         {
             get { return m_cmdEnum; }
@@ -22,13 +23,14 @@ namespace Communication
         }
 
         private List<String> m_args;
-
+        [JsonProperty(PropertyName = "ArgsList")]
         public List<String> ArgsList
         {
             get { return m_args; }
             set { m_args = value; }
         }
 
+        [JsonConstructor]
         public CommandMessage(CommandEnum commandEnum, List<String> args)
         {
             m_cmdEnum = commandEnum;
