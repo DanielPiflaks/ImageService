@@ -24,8 +24,7 @@ namespace Check
         {
             while (true)
             {
-                Tuple<Message, Socket> receivedMsg = tcpServerChannel.StartListening();
-                var objectRecieved = MessageDecoder.Deserialize(receivedMsg.Item1);
+                object receivedMsg = tcpServerChannel.StartListening();
                 //var t = new Thread(() => HandleGuiRequest.handle(objectRecieved, tcpServerChannel, receivedMsg.Item2));
                 //t.Start();
             }

@@ -114,10 +114,10 @@ namespace ImageService
         {
             while (true)
             {
-                Tuple<Message, Socket> receivedMsg = tcpServerChannel.StartListening();
-                var objectRecieved = MessageDecoder.Deserialize(receivedMsg.Item1);
-                var t = new Thread(() => HandleGuiRequest.handle(objectRecieved, tcpServerChannel, receivedMsg.Item2));
-                t.Start();
+                //Tuple<Message, Socket> receivedMsg = tcpServerChannel.StartListening();
+                //var objectRecieved = MessageDecoder.Deserialize(receivedMsg.Item1);
+                //var t = new Thread(() => HandleGuiRequest.handle(objectRecieved, tcpServerChannel, receivedMsg.Item2));
+                //t.Start();
             }
         }
 

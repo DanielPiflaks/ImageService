@@ -75,21 +75,17 @@ namespace Communication
         {
             Send(cmd, args);
             /*
-            CommandMessage msg = new CommandMessage(cmd, args);
-            var message = MessageDecoder.Serialize(msg);
-            stm.Write(message.Data, 0, message.Data.Length);*/
 
-            Message newMsg = new Message();
+            /*Message newMsg = new Message();
             stm.Read(newMsg.Data, 0, newMsg.Data.Length);
-            var rceivedMsg = MessageDecoder.Deserialize(newMsg);
-            return rceivedMsg;
+            var rceivedMsg = MessageDecoder.Deserialize(newMsg);*/
+            return null;
         }
 
         public void receive()
-        {
-            Message newMsg = new Message();
+        {/*
             stm.Read(newMsg.Data, 0, newMsg.Data.Length);
-            var message = MessageDecoder.Deserialize(newMsg);
+            var message = MessageDecoder.Deserialize(newMsg);*/
         }
 
     }

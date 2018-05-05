@@ -9,9 +9,9 @@ namespace Communication
 {
     class HandleClient
     {
-        public static Message GetClientRequest(object recievedObject)
+        public static object GetClientRequest(object recievedObject)
         {
-            Message returnVal = null;
+            //Message returnVal = null;
             if (recievedObject is CommandMessage)
             {
                 CommandMessage msg = (CommandMessage)recievedObject;
@@ -30,7 +30,7 @@ namespace Communication
                         break;
                 }
             }
-            return returnVal;
+            return null;
         }
     }
 }

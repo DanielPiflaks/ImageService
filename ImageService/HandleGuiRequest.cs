@@ -20,7 +20,7 @@ namespace ImageService
                     case Infrastructure.Enums.CommandEnum.NewFileCommand:
                         break;
                     case Infrastructure.Enums.CommandEnum.GetConfigCommand:
-                        tcpServerChannel.SendMessage(MessageDecoder.Serialize(ServiceSettings.GetServiceSettings()), s);
+                        //tcpServerChannel.SendMessage(MessageDecoder.Serialize(ServiceSettings.GetServiceSettings()), s);
                         break;
                     case Infrastructure.Enums.CommandEnum.LogCommand:
                         break;
