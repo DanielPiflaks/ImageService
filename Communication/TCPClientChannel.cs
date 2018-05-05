@@ -14,8 +14,8 @@ namespace Communication
 {
     public class TCPClientChannel
     {
-        public const string IP = "10.0.0.49";
-        public const int PORT = 8000;
+        public const string IP = "10.0.0.138";
+        public const int PORT = 5322;
 
         //members.
         private static TCPClientChannel clientTcp;
