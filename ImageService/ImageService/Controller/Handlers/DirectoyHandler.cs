@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImageService.Infrastructure;
-using ImageService.Infrastructure.Enums;
+using Infrastructure;
 using ImageService.Logging;
 using ImageService.Logging.Modal;
 using System.Text.RegularExpressions;
 using ImageService.Commands;
 using ImageService.Server;
+using Infrastructure.Modal;
+using Infrastructure.Enums;
 
 namespace ImageService.Controller.Handlers
 {

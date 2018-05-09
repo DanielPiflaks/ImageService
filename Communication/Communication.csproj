@@ -47,16 +47,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandMessage.cs" />
-    <Compile Include="HandleClient.cs" />
+    <Compile Include="Interfaces\IHandleClient.cs" />
     <Compile Include="TCPClientChannel.cs" />
-    <Compile Include="TCPServerChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TCPServerChannel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImageService.Infrastructure\ImageService.Infrastructure.csproj">
+    <ProjectReference Include="..\ImageService.Infrastructure\Infrastructure.csproj">
       <Project>{a4d42a93-7dff-4cf7-979c-7fc64b305b49}</Project>
-      <Name>ImageService.Infrastructure</Name>
+      <Name>Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\ImageService.Logging\ImageService.Logging.csproj">
       <Project>{8150a492-e868-4220-bbe8-9451525f24df}</Project>

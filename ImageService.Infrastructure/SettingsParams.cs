@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Configuration;
-using Newtonsoft.Json;
 
-namespace ImageService
+namespace Infrastructure
 {
-    public class ServiceSettings
+    [JsonObject(MemberSerialization.OptIn)]
+    public class SettingsParams
     {
         #region Members
         private string[] m_handlers;
@@ -19,6 +19,7 @@ namespace ImageService
         #endregion
 
         #region Properties
+        [JsonProperty(PropertyName = "Handlers")]
         public string[] Handlers
         {
             get
@@ -30,6 +31,7 @@ namespace ImageService
                 m_handlers = value;
             }
         }
+        [JsonProperty(PropertyName = "OutputDir")]
         public string OutputDir
         {
             get
@@ -41,6 +43,7 @@ namespace ImageService
                 m_outputDir = value;
             }
         }
+        [JsonProperty(PropertyName = "SourceName")]
         public string SourceName
         {
             get
@@ -52,6 +55,7 @@ namespace ImageService
                 m_sourceName = value;
             }
         }
+        [JsonProperty(PropertyName = "LogName")]
         public string LogName
         {
             get
@@ -63,6 +67,7 @@ namespace ImageService
                 m_logName = value;
             }
         }
+        [JsonProperty(PropertyName = "ThumbnailSize")]
         public int ThumbnailSize
         {
             get
@@ -75,22 +80,10 @@ namespace ImageService
             }
         }
         #endregion
-        private static ServiceSettings serviceSettings;
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        private ServiceSettings()
-        {
-            //Split handlers by ;.
-            Handlers = (ConfigurationManager.AppSettings.Get("Handler").Split(';'));
-            OutputDir = ConfigurationManager.AppSettings.Get("OutputDir");
-            SourceName = ConfigurationManager.AppSettings.Get("SourceName");
-            LogName = ConfigurationManager.AppSettings.Get("LogName");
-            m_thumbnailSize = Int32.Parse(ConfigurationManager.AppSettings.Get("ThumbnailSize"));
-        }
 
         [JsonConstructor]
-        private ServiceSettings(string[] handlers, string outputDir, string sourceName, string logName, int thumbnailSize)
+        public SettingsParams(string[] handlers, string outputDir, string sourceName,
+            string logName, int thumbnailSize)
         {
             Handlers = handlers;
             OutputDir = outputDir;
@@ -98,31 +91,5 @@ namespace ImageService
             LogName = logName;
             m_thumbnailSize = thumbnailSize;
         }
-
-        /// <summary>
-        /// Static function to get service settings(singleton).
-        /// </summary>
-        /// <returns></returns>
-        public static ServiceSettings GetServiceSettings()
-        {
-            try
-            {
-                //Check if settings loaded.
-                if (serviceSettings == null)
-                {
-                    //If not loaded, create service settings.
-                    serviceSettings = new ServiceSettings();
-                }
-                //Return service settings.
-                return serviceSettings;
-            }
-            catch (Exception e)
-            {
-                //If failed to create settings - throw exception.
-                throw new Exception(e.Message);
-            }
-
-        }
-
     }
 }

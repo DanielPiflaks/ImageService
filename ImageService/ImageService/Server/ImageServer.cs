@@ -1,6 +1,6 @@
 ﻿using ImageService.Controller;
 using ImageService.Controller.Handlers;
-using ImageService.Infrastructure.Enums;
+using Infrastructure.Enums;
 using ImageService.Logging;
 using ImageService.Modal;
 using System;
@@ -10,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using ImageService.Logging.Modal;
+//using Communication;
+using System.Threading;
+using Infrastructure.Modal;
 
 namespace ImageService.Server
 {
@@ -55,6 +58,7 @@ namespace ImageService.Server
         /// <param name="handlersPathes">Handlera pathes.</param>
         public ImageServer(IImageController controller, ILoggingService logging, string[] handlersPathes)
         {
+
             Controller = controller;
             Logging = logging;
             //For each path in handlers pathes.
@@ -71,6 +75,8 @@ namespace ImageService.Server
                 handler.StartHandleDirectory(path);
             }
         }
+
+ 
 
         /// <summary>
         /// When closing server.

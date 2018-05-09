@@ -1,12 +1,14 @@
-﻿using ImageService;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Infrastructure.Enums;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Communication;
 using Newtonsoft.Json;
+using Infrastructure;
+using Infrastructure.Modal;
 
 namespace ImageServiceGUI.Models
 {
@@ -69,12 +71,14 @@ namespace ImageServiceGUI.Models
 
         public SettingsModel()
         {
-            string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(ImageService.Infrastructure.Enums.CommandEnum.GetConfigCommand, null);
-            ServiceSettings settings = JsonConvert.DeserializeObject<ServiceSettings>(settingsMsg);
+            CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.GetConfigCommand, null, "");
 
-            if (settings is ServiceSettings)
+            string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
+            SettingsParams settings = JsonConvert.DeserializeObject<SettingsParams>(settingsMsg);
+
+            if (settings is SettingsParams)
             {
-                ServiceSettings settingsObj = (ServiceSettings) settings;
+                SettingsParams settingsObj = (SettingsParams) settings;
                 OutputDir = settingsObj.OutputDir;
                 ThumbnailSize = settingsObj.ThumbnailSize;
                 LogName = settingsObj.LogName;

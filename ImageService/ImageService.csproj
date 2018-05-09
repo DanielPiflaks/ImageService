@@ -36,6 +36,10 @@
     <StartupObject>ImageService.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Configuration.Install" />
@@ -52,7 +56,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HandleGuiRequest.cs" />
+    <Compile Include="ImageService\Commands\CloseCommand.cs" />
+    <Compile Include="ImageService\Commands\GetConfigCommand.cs" />
     <Compile Include="ImageService\Commands\ICommand.cs" />
+    <Compile Include="ImageService\Commands\LogCommand.cs" />
     <Compile Include="ImageService\Commands\NewFileCommand.cs" />
     <Compile Include="ImageService\Controller\Handlers\DirectoyHandler.cs" />
     <Compile Include="ImageService\Controller\Handlers\IDirectoryHandler.cs" />
@@ -64,8 +71,6 @@
     <Compile Include="ImageService\ImageService.Designer.cs">
       <DependentUpon>ImageService.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageService\Modal\Event\CommandRecievedEventArgs.cs" />
-    <Compile Include="ImageService\Modal\Event\DirectoryCloseEventArgs.cs" />
     <Compile Include="ImageService\Modal\IImageServiceModal.cs" />
     <Compile Include="ImageService\Modal\ImageServiceModal.cs" />
     <Compile Include="ImageService\Program.cs" />
@@ -87,6 +92,7 @@
     <None Include="bin\Debug\ImageService.vshost.exe.manifest" />
     <None Include="bin\Debug\InstallUtil.InstallLog" />
     <None Include="ImageService\App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ImageService\ImageService.resx">
@@ -109,9 +115,9 @@
       <Project>{546b3913-c4f1-4b96-937f-eb7efb8c39b8}</Project>
       <Name>Communication</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ImageService.Infrastructure\ImageService.Infrastructure.csproj">
+    <ProjectReference Include="..\ImageService.Infrastructure\Infrastructure.csproj">
       <Project>{a4d42a93-7dff-4cf7-979c-7fc64b305b49}</Project>
-      <Name>ImageService.Infrastructure</Name>
+      <Name>Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\ImageService.Logging\ImageService.Logging.csproj">
       <Project>{8150a492-e868-4220-bbe8-9451525f24df}</Project>

@@ -7,14 +7,15 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
-using ImageService.Infrastructure.Enums;
+using Infrastructure.Enums;
 using Newtonsoft.Json;
+using Infrastructure.Modal;
 
 namespace Communication
 {
     public class TCPClientChannel
     {
-        public const string IP = "10.0.0.49";
+        public const string IP = "127.0.0.1";
         public const int PORT = 8000;
 
         //members.
@@ -59,21 +60,29 @@ namespace Communication
             }
         }
 
-        public void Send(CommandEnum cmd, List<String> args)
+        /*public void Send(CommandEnum cmd, List<String> args)
         {
             using (BinaryWriter writer = new BinaryWriter(stm))
             {
-
-                CommandMessage msg = new CommandMessage(cmd, args);
+                CommandRecievedEventArgs msg = new CommandRecievedEventArgs(cmd, args);
                 String JsonMsg = JsonConvert.SerializeObject(msg);
                 writer.Write(JsonMsg);
             }
-        }
+        }*/
 
-        public string SendAndReceive(CommandEnum cmd, List<String> args)
+        public string SendAndReceive(CommandRecievedEventArgs command)
         {
-            Send(cmd, args);
-            return receive();
+            //Send(cmd, args);
+            //return receive();
+
+            BinaryWriter writer = new BinaryWriter(stm);
+            BinaryReader reader = new BinaryReader(stm);
+
+            String JsonMsgSend = JsonConvert.SerializeObject(command);
+            writer.Write(JsonMsgSend);
+
+            String JsonMsgReceive = reader.ReadString();
+            return JsonMsgReceive;
         }
 
         public string receive()

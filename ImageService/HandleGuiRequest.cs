@@ -6,29 +6,50 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Communication.Interfaces;
+using Newtonsoft.Json;
+using Infrastructure.Enums;
+using ImageService.Commands;
+using Infrastructure.Modal;
 
 namespace ImageService
 {
-    public class HandleGuiRequest
+    public class HandleGuiRequest : IHandleClient
     {
-        public static void handle(object recievedObject, TCPServerChannel tcpServerChannel, Stream s)
+        private Dictionary<int, ICommand> commands;
+
+        public HandleGuiRequest()
         {
-            if (recievedObject is CommandMessage)
+            commands = new Dictionary<int, ICommand>()
             {
-                CommandMessage msg = (CommandMessage)recievedObject;
-                switch (msg.CmdEnum)
+                { (int) CommandEnum.CloseCommand,  new CloseCommand() },
+                { (int) CommandEnum.GetConfigCommand,  new GetConfigCommand() },
+                { (int) CommandEnum.LogCommand,  new CloseCommand() }
+            };
+        }
+
+        public void handle(TCPServerChannel tcpServerChannel, TcpClient client)
+        {
+            using (NetworkStream stream = client.GetStream())
+            using (BinaryReader reader = new BinaryReader(stream))
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            {
+                string commandLine = reader.ReadString();
+                CommandRecievedEventArgs wantedCommand = JsonConvert.DeserializeObject<CommandRecievedEventArgs>(commandLine);
+
+                //Check if wanted command ID is exist.
+                if (commands.ContainsKey(wantedCommand.CommandID))
                 {
-                    case Infrastructure.Enums.CommandEnum.NewFileCommand:
-                        break;
-                    case Infrastructure.Enums.CommandEnum.GetConfigCommand:
-                        tcpServerChannel.SendMessage(ServiceSettings.GetServiceSettings(), s);
-                        break;
-                    case Infrastructure.Enums.CommandEnum.LogCommand:
-                        break;
-                    case Infrastructure.Enums.CommandEnum.CloseCommand:
-                        break;
-                    default:
-                        break;
+                    //Create new task to handle execution of command.
+                    Task task = new Task(() =>
+                    {
+                        bool result;
+                        //Execute command.
+                        string resultMessage = commands[wantedCommand.CommandID].Execute(wantedCommand.Args, out result);
+                        writer.Write(resultMessage);
+                    });
+                    //Start task.
+                    task.Start();
                 }
             }
         }

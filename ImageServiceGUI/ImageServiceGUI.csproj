@@ -130,13 +130,9 @@
       <Project>{546b3913-c4f1-4b96-937f-eb7efb8c39b8}</Project>
       <Name>Communication</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ImageService.Infrastructure\ImageService.Infrastructure.csproj">
+    <ProjectReference Include="..\ImageService.Infrastructure\Infrastructure.csproj">
       <Project>{a4d42a93-7dff-4cf7-979c-7fc64b305b49}</Project>
-      <Name>ImageService.Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ImageService\ImageService.csproj">
-      <Project>{1942FB1E-5EC0-470A-9608-F22A858B73C3}</Project>
-      <Name>ImageService</Name>
+      <Name>Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
