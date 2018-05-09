@@ -9,6 +9,8 @@ using Communication;
 using Newtonsoft.Json;
 using Infrastructure;
 using Infrastructure.Modal;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace ImageServiceGUI.Models
 {
@@ -24,6 +26,8 @@ namespace ImageServiceGUI.Models
         #endregion
 
         #region Properties
+        public ObservableCollection<string> Handlers { get; set; }
+
         private string m_outputDir;
         public string OutputDir
         {
@@ -76,9 +80,16 @@ namespace ImageServiceGUI.Models
             string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
             SettingsParams settings = JsonConvert.DeserializeObject<SettingsParams>(settingsMsg);
 
+            Handlers = new ObservableCollection<string>();
             if (settings is SettingsParams)
             {
-                SettingsParams settingsObj = (SettingsParams) settings;
+                SettingsParams settingsObj = (SettingsParams)settings;
+
+                foreach (string handler in settingsObj.Handlers)
+                {
+                    Handlers.Add(handler);
+                }
+
                 OutputDir = settingsObj.OutputDir;
                 ThumbnailSize = settingsObj.ThumbnailSize;
                 LogName = settingsObj.LogName;
@@ -89,5 +100,15 @@ namespace ImageServiceGUI.Models
                 throw new Exception("Error");
             }
         }
+
+        public void RemoveHandler(string handler)
+        {
+            string[] args = { handler }; 
+            CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.CloseHandler, args, "");
+            TCPClientChannel.GetTCPClientChannel().Send(command);
+
+            Handlers.Remove(handler);
+        }
+
     }
 }

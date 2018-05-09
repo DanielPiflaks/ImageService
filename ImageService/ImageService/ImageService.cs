@@ -103,7 +103,7 @@ namespace ImageService
                 m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
                 m_loggingService.Log("Image service created", Logging.Modal.MessageTypeEnum.INFO);
 
-                HandleGuiRequest handleGuiRequest = new HandleGuiRequest();
+                HandleGuiRequest handleGuiRequest = new HandleGuiRequest(m_loggingService);
                 m_tcpServer = new TCPServerChannel(8000, m_loggingService, handleGuiRequest);
                 m_tcpServer.Start();
             }

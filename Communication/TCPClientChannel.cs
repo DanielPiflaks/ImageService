@@ -21,7 +21,6 @@ namespace Communication
         //members.
         private static TCPClientChannel clientTcp;
         private TcpClient m_tcpClient;
-        private Stream stm;
 
         /// <summary>
         /// properties.
@@ -38,10 +37,8 @@ namespace Communication
         private TCPClientChannel()
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(IP), PORT);
-            TcpClient client = new TcpClient();
-            client.Connect(ep);
-
-            stm = client.GetStream();
+            TCPClient = new TcpClient();
+            TCPClient.Connect(ep);
         }
 
         public static TCPClientChannel GetTCPClientChannel()
@@ -60,38 +57,67 @@ namespace Communication
             }
         }
 
-        /*public void Send(CommandEnum cmd, List<String> args)
+        public void Send(CommandRecievedEventArgs command)
         {
-            using (BinaryWriter writer = new BinaryWriter(stm))
+            Task task = new Task(() =>
             {
-                CommandRecievedEventArgs msg = new CommandRecievedEventArgs(cmd, args);
-                String JsonMsg = JsonConvert.SerializeObject(msg);
-                writer.Write(JsonMsg);
-            }
-        }*/
+                try
+                {
+                    NetworkStream stream = TCPClient.GetStream();
+                    BinaryWriter writer = new BinaryWriter(stream);
+                    String JsonMsgSend = JsonConvert.SerializeObject(command);
+                    writer.Write(JsonMsgSend);
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            });
+
+            task.Start();
+            task.Wait();
+        }
 
         public string SendAndReceive(CommandRecievedEventArgs command)
         {
-            //Send(cmd, args);
-            //return receive();
+            String JsonMsgReceive = null;
 
-            BinaryWriter writer = new BinaryWriter(stm);
-            BinaryReader reader = new BinaryReader(stm);
+            //Create new task to handle execution of command.
+            Task task = new Task(() =>
+            {
+                try
+                {
+                    NetworkStream stream = TCPClient.GetStream();
 
-            String JsonMsgSend = JsonConvert.SerializeObject(command);
-            writer.Write(JsonMsgSend);
+                    BinaryWriter writer = new BinaryWriter(stream);
+                    BinaryReader reader = new BinaryReader(stream);
 
-            String JsonMsgReceive = reader.ReadString();
+                    String JsonMsgSend = JsonConvert.SerializeObject(command);
+                    writer.Write(JsonMsgSend);
+
+                    JsonMsgReceive = reader.ReadString();
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            });
+
+            task.Start();
+            task.Wait();
+
             return JsonMsgReceive;
         }
 
         public string receive()
         {
-            using (BinaryReader reader = new BinaryReader(stm))
-            {
-                String JsonMsg = reader.ReadString();
-                return JsonMsg;
-            }
+            BinaryReader reader = new BinaryReader(TCPClient.GetStream());
+            string JsonMsgReceive = reader.ReadString();
+            return JsonMsgReceive;
         }
 
     }

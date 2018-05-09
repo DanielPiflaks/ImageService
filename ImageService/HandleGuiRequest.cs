@@ -11,14 +11,16 @@ using Newtonsoft.Json;
 using Infrastructure.Enums;
 using ImageService.Commands;
 using Infrastructure.Modal;
+using ImageService.Logging;
 
 namespace ImageService
 {
     public class HandleGuiRequest : IHandleClient
     {
         private Dictionary<int, ICommand> commands;
+        private ILoggingService m_logging;
 
-        public HandleGuiRequest()
+        public HandleGuiRequest(ILoggingService logging)
         {
             commands = new Dictionary<int, ICommand>()
             {
@@ -26,32 +28,39 @@ namespace ImageService
                 { (int) CommandEnum.GetConfigCommand,  new GetConfigCommand() },
                 { (int) CommandEnum.LogCommand,  new CloseCommand() }
             };
+            m_logging = logging;
         }
 
         public void handle(TCPServerChannel tcpServerChannel, TcpClient client)
         {
-            using (NetworkStream stream = client.GetStream())
-            using (BinaryReader reader = new BinaryReader(stream))
-            using (BinaryWriter writer = new BinaryWriter(stream))
+            Task task = new Task(() =>
             {
-                string commandLine = reader.ReadString();
-                CommandRecievedEventArgs wantedCommand = JsonConvert.DeserializeObject<CommandRecievedEventArgs>(commandLine);
-
-                //Check if wanted command ID is exist.
-                if (commands.ContainsKey(wantedCommand.CommandID))
+                try
                 {
-                    //Create new task to handle execution of command.
-                    Task task = new Task(() =>
+                    using (NetworkStream stream = client.GetStream())
+                    using (BinaryReader reader = new BinaryReader(stream))
+                    using (BinaryWriter writer = new BinaryWriter(stream))
                     {
-                        bool result;
-                        //Execute command.
-                        string resultMessage = commands[wantedCommand.CommandID].Execute(wantedCommand.Args, out result);
-                        writer.Write(resultMessage);
-                    });
-                    //Start task.
-                    task.Start();
+                        string commandLine = reader.ReadString();
+                        CommandRecievedEventArgs wantedCommand = JsonConvert.DeserializeObject<CommandRecievedEventArgs>(commandLine);
+                        //Check if wanted command ID is exist.
+                        if (commands.ContainsKey(wantedCommand.CommandID))
+                        {
+                            bool result;
+                            //Execute command.
+                            string resultMessage = commands[wantedCommand.CommandID].Execute(wantedCommand.Args, out result);
+                            writer.Write(resultMessage);
+                        }
+                    }
                 }
-            }
+                catch (Exception e)
+                {
+                    m_logging.Log("Problem in handleing client - " + e.Message, Logging.Modal.MessageTypeEnum.FAIL);
+                }
+
+            });
+            //Start task.
+            task.Start();
         }
     }
 }

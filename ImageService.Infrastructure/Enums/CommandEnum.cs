@@ -11,6 +11,7 @@ namespace Infrastructure.Enums
         NewFileCommand,
         GetConfigCommand,
         LogCommand,
-        CloseCommand
+        CloseCommand,
+        CloseHandler
     }
 }
