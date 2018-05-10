@@ -19,6 +19,7 @@ namespace ImageService
     {
         private Dictionary<int, ICommand> commands;
         private ILoggingService m_logging;
+        private bool m_stopTask;
 
         public HandleGuiRequest(ILoggingService logging)
         {
@@ -29,27 +30,31 @@ namespace ImageService
                 { (int) CommandEnum.LogCommand,  new CloseCommand() }
             };
             m_logging = logging;
+            m_stopTask = false;
         }
 
-        public void handle(TCPServerChannel tcpServerChannel, TcpClient client)
+        public void handle(TcpClient client)
         {
             Task task = new Task(() =>
             {
                 try
                 {
-                    using (NetworkStream stream = client.GetStream())
-                    using (BinaryReader reader = new BinaryReader(stream))
-                    using (BinaryWriter writer = new BinaryWriter(stream))
+                    while (!m_stopTask)
                     {
-                        string commandLine = reader.ReadString();
-                        CommandRecievedEventArgs wantedCommand = JsonConvert.DeserializeObject<CommandRecievedEventArgs>(commandLine);
-                        //Check if wanted command ID is exist.
-                        if (commands.ContainsKey(wantedCommand.CommandID))
+                        using (NetworkStream stream = client.GetStream())
+                        using (BinaryReader reader = new BinaryReader(stream))
+                        using (BinaryWriter writer = new BinaryWriter(stream))
                         {
-                            bool result;
-                            //Execute command.
-                            string resultMessage = commands[wantedCommand.CommandID].Execute(wantedCommand.Args, out result);
-                            writer.Write(resultMessage);
+                            string commandLine = reader.ReadString();
+                            CommandRecievedEventArgs wantedCommand = JsonConvert.DeserializeObject<CommandRecievedEventArgs>(commandLine);
+                            //Check if wanted command ID is exist.
+                            if (commands.ContainsKey(wantedCommand.CommandID))
+                            {
+                                bool result;
+                                //Execute command.
+                                string resultMessage = commands[wantedCommand.CommandID].Execute(wantedCommand.Args, out result);
+                                writer.Write(resultMessage);
+                            }
                         }
                     }
                 }

@@ -28,7 +28,6 @@ namespace Communication
             set { m_handleClient = value; }
         }
 
-
         private int m_port;
         public int Port
         {
@@ -43,7 +42,8 @@ namespace Communication
             set { m_ip = value; }
         }
 
-
+        private List<TcpClient> m_clientsListeners;
+        private readonly Mutex mutex = new Mutex();
 
         #endregion
 
@@ -53,6 +53,7 @@ namespace Communication
             Port = port;
             Logging = logging;
             HandleClient = handleClient;
+            m_clientsListeners = new List<TcpClient>();
         }
 
         public void SendMessage(object msg, TcpClient client)
@@ -85,16 +86,11 @@ namespace Communication
                         TcpClient client = Listener.AcceptTcpClient();
                         Logging.Log("Got new connection", MessageTypeEnum.INFO);
 
-                        //CommandRecieveEventArgs cmdMessage = null;
-                        /*using (NetworkStream stream = client.GetStream())
-                        using (BinaryReader reader = new BinaryReader(stream))
-                        using (BinaryWriter writer = new BinaryWriter(stream))
-                        {
-                            string commandLine = reader.ReadString();
-                            cmdMessage = JsonConvert.DeserializeObject<CommandMessage>(commandLine);
-                        }*/
+                        mutex.WaitOne();
+                        m_clientsListeners.Add(client);
+                        mutex.ReleaseMutex();
 
-                        HandleClient.handle(this, client);
+                        HandleClient.handle(client);
                     }
                     catch (SocketException)
                     {

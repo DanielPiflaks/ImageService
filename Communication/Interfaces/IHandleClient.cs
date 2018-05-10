@@ -10,6 +10,6 @@ namespace Communication.Interfaces
 {
     public interface IHandleClient
     {
-          void handle(TCPServerChannel tcpServerChannel, TcpClient client);
+          void handle(TcpClient client);
     }
 }
