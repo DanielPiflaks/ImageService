@@ -21,6 +21,7 @@ namespace ImageService.Server
         #region Members
         private IImageController m_controller;
         private ILoggingService m_logging;
+        private List<IDirectoryHandler> m_handlers;
         #endregion
 
         #region Properties
@@ -58,9 +59,9 @@ namespace ImageService.Server
         /// <param name="handlersPathes">Handlera pathes.</param>
         public ImageServer(IImageController controller, ILoggingService logging, string[] handlersPathes)
         {
-
             Controller = controller;
             Logging = logging;
+            m_handlers = new List<IDirectoryHandler>();
             //For each path in handlers pathes.
             foreach (var path in handlersPathes)
             {
@@ -68,6 +69,7 @@ namespace ImageService.Server
                 m_logging.Log("Creating handler for: " + path, MessageTypeEnum.INFO);
                 //Create handler.
                 IDirectoryHandler handler = new DirectoyHandler(m_controller, m_logging, path);
+                m_handlers.Add(handler);
                 //Add events.
                 CommandRecieved += handler.OnCommandRecieved;
                 CloseServer += handler.CloseHandler;
@@ -76,7 +78,25 @@ namespace ImageService.Server
             }
         }
 
- 
+        public bool RemoveHandler(string handler)
+        {
+            foreach (IDirectoryHandler existingHandler in m_handlers)
+            {
+                if (string.Compare(existingHandler.GetHandlerPath(), handler) == 0)
+                {
+                    m_handlers.Remove(existingHandler);
+                    CommandRecieved -= existingHandler.OnCommandRecieved;
+                    CloseServer -= existingHandler.CloseHandler;
+                    existingHandler.CloseHandler(this, null);
+                    //Write to log.
+                    m_logging.Log("Removing handler: " + handler, MessageTypeEnum.INFO);
+                    return true;
+                }
+            }
+            m_logging.Log("Can't remove handler: " + handler + " because it's not exist.",
+                     MessageTypeEnum.WARNING);
+            return false;
+        }
 
         /// <summary>
         /// When closing server.

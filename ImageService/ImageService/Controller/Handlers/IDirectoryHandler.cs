@@ -24,5 +24,6 @@ namespace ImageService.Controller.Handlers
         /// <param name="e">Comand recieved event arguments.</param>
         void OnCommandRecieved(object sender, CommandRecievedEventArgs e);
         void CloseHandler(object sender, DirectoryCloseEventArgs e);
+        string GetHandlerPath();
     }
 }

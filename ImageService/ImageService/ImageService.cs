@@ -103,13 +103,16 @@ namespace ImageService
                 m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
                 m_loggingService.Log("Image service created", Logging.Modal.MessageTypeEnum.INFO);
 
-                HandleGuiRequest handleGuiRequest = new HandleGuiRequest(m_loggingService);
+                HandleGuiRequest handleGuiRequest = new HandleGuiRequest(m_loggingService, m_imageServer);
                 m_tcpServer = new TCPServerChannel(8000, m_loggingService, handleGuiRequest);
+
+                HandleGuiRequest.NotifyAllClientsEvent += m_tcpServer.NotifyClientsOnChange;
+
                 m_tcpServer.Start();
             }
-            catch
+            catch (Exception e)
             {
-                m_loggingService.Log("Failed creating image service", Logging.Modal.MessageTypeEnum.FAIL);
+                m_loggingService.Log("Failed creating image service, exception: " + e.Message, Logging.Modal.MessageTypeEnum.FAIL);
             }
         }
 

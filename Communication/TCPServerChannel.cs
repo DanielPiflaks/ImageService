@@ -92,7 +92,7 @@ namespace Communication
 
                         HandleClient.handle(client);
                     }
-                    catch (SocketException)
+                    catch (SocketException e)
                     {
                         break;
                     }
@@ -102,5 +102,34 @@ namespace Communication
             task.Start();
         }
 
+        public void NotifyClientsOnChange(string message)
+        {
+            try
+            {
+                foreach (TcpClient client in m_clientsListeners)
+                {
+                    new Task(() =>
+                    {
+                        try
+                        {
+                            NetworkStream stream = client.GetStream();
+                            BinaryWriter writer = new BinaryWriter(stream);
+                            mutex.WaitOne();
+                            writer.Write(message);
+                            mutex.ReleaseMutex();
+                        }
+                        catch (Exception e)
+                        {
+                            m_clientsListeners.Remove(client);
+                        }
+
+                    }).Start();
+                }
+            }
+            catch (Exception e)
+            {
+                Logging.Log(e.Message, MessageTypeEnum.FAIL);
+            }
+        }
     }
 }

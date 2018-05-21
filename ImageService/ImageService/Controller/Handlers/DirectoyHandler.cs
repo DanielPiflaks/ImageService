@@ -170,12 +170,20 @@ namespace ImageService.Controller.Handlers
                 m_dirWatcher.EnableRaisingEvents = false;
                 //Remove event on command receive.
                 ((ImageServer)sender).CommandRecieved -= this.OnCommandRecieved;
+                m_dirWatcher.Created -= new FileSystemEventHandler(NewFileHandler);
+                m_dirWatcher.Changed -= new FileSystemEventHandler(NewFileHandler);
+                HandlerListManager.GetHandlerListManager().removeHandler(m_path);
                 m_logging.Log("Close handler of " + m_path, MessageTypeEnum.INFO);
             }
             catch
             {
                 m_logging.Log("Failed closing handler of " + m_path, MessageTypeEnum.FAIL);
             }
+        }
+
+        public string GetHandlerPath()
+        {
+            return this.m_path;
         }
     }
 }

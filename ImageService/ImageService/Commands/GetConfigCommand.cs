@@ -16,8 +16,8 @@ namespace ImageService.Commands
         {
             try
             {
-                //Split handlers by ;.
-                string[] handlers = (ConfigurationManager.AppSettings.Get("Handler").Split(';'));
+                //Split handlers by ;
+                string[] handlers = HandlerListManager.GetHandlerListManager().Handlers;
                 string outputDir = ConfigurationManager.AppSettings.Get("OutputDir");
                 string sourceName = ConfigurationManager.AppSettings.Get("SourceName");
                 string logName = ConfigurationManager.AppSettings.Get("LogName");
