@@ -1,6 +1,7 @@
 ﻿using Communication.Interfaces;
 using ImageService.Logging;
 using ImageService.Logging.Modal;
+using Infrastructure.Event;
 using Newtonsoft.Json;
 //using Newtonsoft.Json;
 using System;
@@ -102,10 +103,12 @@ namespace Communication
             task.Start();
         }
 
-        public void NotifyClientsOnChange(string message)
+        public void NotifyClientsOnChange(object sender, ConfigurationRecieveEventArgs e)
         {
             try
             {
+                string message = JsonConvert.SerializeObject(e);
+
                 foreach (TcpClient client in m_clientsListeners)
                 {
                     new Task(() =>
@@ -118,7 +121,7 @@ namespace Communication
                             writer.Write(message);
                             mutex.ReleaseMutex();
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
                             m_clientsListeners.Remove(client);
                         }
@@ -126,9 +129,9 @@ namespace Communication
                     }).Start();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logging.Log(e.Message, MessageTypeEnum.FAIL);
+                Logging.Log(ex.Message, MessageTypeEnum.FAIL);
             }
         }
     }

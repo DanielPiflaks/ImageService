@@ -18,8 +18,7 @@ namespace ImageService
 {
     public class HandleGuiRequest : IHandleClient
     {
-        public delegate void NotifyClients(string message);
-        public static event NotifyClients NotifyAllClientsEvent;
+        public event EventHandler<ConfigurationRecieveEventArgs> NotifyClients;
 
         private Dictionary<int, ICommand> commands;
         private ILoggingService m_logging;
@@ -31,15 +30,16 @@ namespace ImageService
             {
                 { (int) CommandEnum.CloseCommand,  new CloseCommand() },
                 { (int) CommandEnum.GetConfigCommand,  new GetConfigCommand() },
-                { (int) CommandEnum.CloseHandler,  new CloseHandlerCommand(imageServer)}
+                { (int) CommandEnum.CloseHandler,  new CloseHandlerCommand(imageServer, this)},
+                { (int) CommandEnum.LogCommand, new LogCommand(logging) }
             };
             m_logging = logging;
             m_stopTask = false;
         }
 
-        public static void InvokeEvent(string message)
+        public void InvokeEvent(ConfigurationRecieveEventArgs message)
         {
-            NotifyAllClientsEvent.Invoke(message);
+            NotifyClients?.Invoke(this, message);
         }
 
         public void handle(TcpClient client)

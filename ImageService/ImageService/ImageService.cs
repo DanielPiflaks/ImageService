@@ -106,7 +106,8 @@ namespace ImageService
                 HandleGuiRequest handleGuiRequest = new HandleGuiRequest(m_loggingService, m_imageServer);
                 m_tcpServer = new TCPServerChannel(8000, m_loggingService, handleGuiRequest);
 
-                HandleGuiRequest.NotifyAllClientsEvent += m_tcpServer.NotifyClientsOnChange;
+                handleGuiRequest.NotifyClients += m_tcpServer.NotifyClientsOnChange;
+                m_loggingService.NotifyClients += m_tcpServer.NotifyClientsOnChange;
 
                 m_tcpServer.Start();
             }

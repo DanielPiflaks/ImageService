@@ -10,7 +10,7 @@ namespace ImageService.Infrastructure.Enums
     {
         SettingsConfiguration,
         RemoveHandler,
-        LogConfiguration,
+        LogHistory,
         NewLogMessageConfiguraton
     }
 }

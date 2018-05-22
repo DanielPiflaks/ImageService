@@ -15,9 +15,11 @@ namespace ImageService.Commands
     class CloseHandlerCommand : ICommand
     {
         private ImageServer m_imageServer;
-        public CloseHandlerCommand(ImageServer imageServer)
+        private HandleGuiRequest m_handleGui;
+        public CloseHandlerCommand(ImageServer imageServer, HandleGuiRequest handleGui)
         {
             m_imageServer = imageServer;
+            m_handleGui = handleGui;
         }
 
         public string Execute(string[] args, out bool result)
@@ -37,9 +39,8 @@ namespace ImageService.Commands
 
             ConfigurationRecieveEventArgs command =
                 new ConfigurationRecieveEventArgs((int)ConfigurationEnum.RemoveHandler, args);
-            string message = JsonConvert.SerializeObject(command);
 
-            HandleGuiRequest.InvokeEvent(message);
+            m_handleGui.InvokeEvent(command);
             return resultString;
         }
     }
