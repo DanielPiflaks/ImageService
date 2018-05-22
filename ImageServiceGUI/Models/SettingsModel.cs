@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 using Communication;
 using Newtonsoft.Json;
 using Infrastructure;
-using Infrastructure.Modal;
+using Infrastructure.Event;
 using System.Collections.ObjectModel;
 using System.Windows.Data;
+using ImageService.Infrastructure.Enums;
+using Infrastructure.Event;
+using System.Windows;
 
 namespace ImageServiceGUI.Models
 {
@@ -61,8 +64,8 @@ namespace ImageServiceGUI.Models
             }
         }
 
-        private int m_thumbnailSize;
-        public int ThumbnailSize
+        private string m_thumbnailSize;
+        public string ThumbnailSize
         {
             get { return m_thumbnailSize; }
             set
@@ -76,34 +79,59 @@ namespace ImageServiceGUI.Models
         public SettingsModel()
         {
             CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.GetConfigCommand, null, "");
-
+            TCPClientChannel.GetTCPClientChannel().NotifyMessage += UpdateByNotification;
             string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
-            SettingsParams settings = JsonConvert.DeserializeObject<SettingsParams>(settingsMsg);
+            UpdateByNotification(settingsMsg);
+        }
 
-            Handlers = new ObservableCollection<string>();
-            if (settings is SettingsParams)
+        public void UpdateByNotification(string message)
+        {
+            ConfigurationRecieveEventArgs configurationNotify =
+                JsonConvert.DeserializeObject<ConfigurationRecieveEventArgs>(message);
+            try
             {
-                SettingsParams settingsObj = (SettingsParams)settings;
-
-                foreach (string handler in settingsObj.Handlers)
+                switch ((ConfigurationEnum)configurationNotify.ConfigurationID)
                 {
-                    Handlers.Add(handler);
+                    case ConfigurationEnum.SettingsConfiguration:
+                        SetSettings(configurationNotify.Args);
+                        break;
+                    case ConfigurationEnum.RemoveHandler:
+                        if (Handlers.Contains(configurationNotify.Args[0]))
+                        {
+                            Application.Current.Dispatcher.Invoke(new Action(() =>
+                            { Handlers.Remove(configurationNotify.Args[0]); }));
+                        }
+
+                        break;
+                    default:
+                        break;
                 }
 
-                OutputDir = settingsObj.OutputDir;
-                ThumbnailSize = settingsObj.ThumbnailSize;
-                LogName = settingsObj.LogName;
-                SourceName = settingsObj.SourceName;
             }
-            else
+            catch (Exception e)
             {
-                throw new Exception("Error");
+                throw new Exception(e.Message);
+            }
+        }
+
+        public void SetSettings(string[] settings)
+        {
+            Handlers = new ObservableCollection<string>();
+
+            OutputDir = settings[0];
+            ThumbnailSize = settings[1];
+            LogName = settings[2];
+            SourceName = settings[3];
+
+            for (int i = 4; i < settings.Length; i++)
+            {
+                Handlers.Add(settings[i]);
             }
         }
 
         public void RemoveHandler(string handler)
         {
-            string[] args = { handler }; 
+            string[] args = { handler };
             CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.CloseHandler, args, "");
             TCPClientChannel.GetTCPClientChannel().Send(command);
 

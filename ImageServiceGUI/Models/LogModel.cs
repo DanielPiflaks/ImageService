@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
+using ImageService.Logging.Modal;
 
 namespace ImageServiceGUI.Models
 {
@@ -15,6 +17,8 @@ namespace ImageServiceGUI.Models
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
+
+        public ObservableCollection<MessageRecievedEventArgs> LogMessages { get; set; }
 
         private string m_type;
         public string Type
@@ -36,6 +40,14 @@ namespace ImageServiceGUI.Models
                 m_type = value;
                 OnPropertyChanged("Msg");
             }
+        }
+
+        public LogModel()
+        {
+            LogMessages = new ObservableCollection<MessageRecievedEventArgs>();
+
+            LogMessages.Add(new MessageRecievedEventArgs(MessageTypeEnum.INFO, "Working"));
+            LogMessages.Add(new MessageRecievedEventArgs(MessageTypeEnum.WARNING, "Also Working"));
         }
     }
 }

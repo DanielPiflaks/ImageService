@@ -28,10 +28,10 @@
             <TextBlock Grid.Row="1" Text="Source Name:  " FontWeight="ExtraBold" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
             <TextBlock Grid.Row="2" Text="Log Name:  " FontWeight="ExtraBold" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
             <TextBlock Grid.Row="3" Text="Thumbnail Size:  " FontWeight="ExtraBold" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding SettingsModel.OutputDir}"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding SettingsModel.SourceName}"/>
-            <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding SettingsModel.LogName}"/>
-            <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding SettingsModel.ThumbnailSize}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding VMOutputDir}"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding VMSourceName}"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding VMLogName}"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding VMThumbnailSize}"/>
         </Grid>
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
@@ -39,7 +39,7 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Content="Remove" Command="{Binding RemoveCommand}" HorizontalContentAlignment="Center"/>
-            <ListBox Grid.Row="1" ItemsSource="{Binding SettingsModel.Handlers}" SelectedItem="{Binding SelectedHandler}" Height="auto"/>
+            <ListBox Grid.Row="1" ItemsSource="{Binding VMHandlers}" SelectedItem="{Binding SelectedHandler}" Height="auto"/>
         </Grid>
 
 

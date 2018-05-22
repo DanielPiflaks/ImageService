@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Infrastructure.Enums;
 using Newtonsoft.Json;
-using Infrastructure.Modal;
+using Infrastructure.Event;
 
 namespace Communication
 {
@@ -17,10 +17,13 @@ namespace Communication
     {
         public const string IP = "127.0.0.1";
         public const int PORT = 8000;
-
+    
         //members.
         private static TCPClientChannel clientTcp;
         private TcpClient m_tcpClient;
+        private bool m_stopListening;
+        public delegate void NotifyIncomingMessage(string message);
+        public event NotifyIncomingMessage NotifyMessage;
 
         /// <summary>
         /// properties.
@@ -39,6 +42,7 @@ namespace Communication
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(IP), PORT);
             TCPClient = new TcpClient();
             TCPClient.Connect(ep);
+            m_stopListening = false;
         }
 
         public static TCPClientChannel GetTCPClientChannel()
@@ -67,9 +71,8 @@ namespace Communication
                     BinaryWriter writer = new BinaryWriter(stream);
                     String JsonMsgSend = JsonConvert.SerializeObject(command);
                     writer.Write(JsonMsgSend);
-
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
 
                 }
@@ -80,29 +83,30 @@ namespace Communication
             task.Wait();
         }
 
+        public string Receive()
+        {
+            NetworkStream stream = TCPClient.GetStream();
+            BinaryReader reader = new BinaryReader(stream);
+
+            string message = reader.ReadString();
+            return message;
+        }
+
         public string SendAndReceive(CommandRecievedEventArgs command)
         {
-            String JsonMsgReceive = null;
+            String message = null;
 
             //Create new task to handle execution of command.
             Task task = new Task(() =>
             {
                 try
                 {
-                    NetworkStream stream = TCPClient.GetStream();
-
-                    BinaryWriter writer = new BinaryWriter(stream);
-                    BinaryReader reader = new BinaryReader(stream);
-
-                    String JsonMsgSend = JsonConvert.SerializeObject(command);
-                    writer.Write(JsonMsgSend);
-
-                    JsonMsgReceive = reader.ReadString();
-
+                    Send(command);
+                    message = Receive();
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-
+                    
                 }
 
             });
@@ -110,14 +114,31 @@ namespace Communication
             task.Start();
             task.Wait();
 
-            return JsonMsgReceive;
+            return message;
         }
-
-        public string receive()
+      
+        public void ListenToServer()
         {
-            BinaryReader reader = new BinaryReader(TCPClient.GetStream());
-            string JsonMsgReceive = reader.ReadString();
-            return JsonMsgReceive;
+            String message = null;
+
+            //Create new task to handle execution of command.
+            Task task = new Task(() =>
+            {
+                try
+                {
+                    while (!m_stopListening)
+                    {
+                        message = Receive();
+                        NotifyMessage?.Invoke(message);
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            
+            });
+            task.Start();
         }
 
     }

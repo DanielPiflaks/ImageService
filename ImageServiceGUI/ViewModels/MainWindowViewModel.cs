@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Communication;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,12 @@ namespace ImageServiceGUI.ViewModels
         public MainWindowViewModel()
         {
             this.SettingViewModel = new SettingViewModel();
+            this.LogViewModel = new LogViewModel();
+            TCPClientChannel.GetTCPClientChannel().ListenToServer();
         }
 
         public SettingViewModel SettingViewModel { get; set; }
+        public LogViewModel LogViewModel { get; set; }
+
     }
 }

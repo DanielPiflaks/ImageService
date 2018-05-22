@@ -12,7 +12,7 @@ using System.Configuration;
 using ImageService.Logging.Modal;
 //using Communication;
 using System.Threading;
-using Infrastructure.Modal;
+using Infrastructure.Event;
 
 namespace ImageService.Server
 {

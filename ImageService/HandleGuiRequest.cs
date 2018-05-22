@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Communication.Interfaces;
 using Newtonsoft.Json;
+using Infrastructure.Event;
 using Infrastructure.Enums;
 using ImageService.Commands;
-using Infrastructure.Modal;
 using ImageService.Logging;
 using ImageService.Server;
 

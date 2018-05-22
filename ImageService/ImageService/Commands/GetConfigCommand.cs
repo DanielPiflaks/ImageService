@@ -1,12 +1,9 @@
-﻿using ImageService.Commands;
-using Infrastructure;
+﻿using ImageService.Infrastructure.Enums;
+using Infrastructure.Event;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageService.Commands
 {
@@ -16,15 +13,22 @@ namespace ImageService.Commands
         {
             try
             {
+                List<string> sendArgs = new List<string>();
                 //Split handlers by ;
-                string[] handlers = HandlerListManager.GetHandlerListManager().Handlers;
-                string outputDir = ConfigurationManager.AppSettings.Get("OutputDir");
-                string sourceName = ConfigurationManager.AppSettings.Get("SourceName");
-                string logName = ConfigurationManager.AppSettings.Get("LogName");
-                int thumbnailSize = Int32.Parse(ConfigurationManager.AppSettings.Get("ThumbnailSize"));
+                sendArgs.Add(ConfigurationManager.AppSettings.Get("OutputDir"));
+                sendArgs.Add(ConfigurationManager.AppSettings.Get("SourceName"));
+                sendArgs.Add(ConfigurationManager.AppSettings.Get("LogName"));
+                sendArgs.Add(ConfigurationManager.AppSettings.Get("ThumbnailSize"));
 
-                SettingsParams parameters = new SettingsParams(handlers, outputDir, sourceName, logName, thumbnailSize);
-                string output = JsonConvert.SerializeObject(parameters);
+                string[] handlers = HandlerListManager.GetHandlerListManager().Handlers;
+                for (int i = 0; i < handlers.Length; i++)
+                {
+                    sendArgs.Add(handlers[i]);
+                }
+
+                ConfigurationRecieveEventArgs configurationEvent =
+                    new ConfigurationRecieveEventArgs((int)ConfigurationEnum.SettingsConfiguration, sendArgs.ToArray());
+                string output = JsonConvert.SerializeObject(configurationEvent);
                 result = true;
                 return output;
             }

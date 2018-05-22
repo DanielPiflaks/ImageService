@@ -2,6 +2,7 @@
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,32 @@ namespace ImageServiceGUI.ViewModels
     class SettingViewModel : INotifyPropertyChanged
     {
         #region Properties
+        public string VMOutputDir
+        {
+            get { return SettingsModel.OutputDir; }
+        }
+
+        public string VMSourceName
+        {
+            get { return SettingsModel.SourceName; }
+        }
+
+        public string VMLogName
+        {
+            get { return SettingsModel.LogName; }
+        }
+
+        public string VMThumbnailSize
+        {
+            get { return SettingsModel.ThumbnailSize; }
+        }
+
+        public ObservableCollection<string> VMHandlers
+        {
+            get {return SettingsModel.Handlers; }
+        }
+
+
         private SettingsModel m_settingsModel;
         public SettingsModel SettingsModel
         {

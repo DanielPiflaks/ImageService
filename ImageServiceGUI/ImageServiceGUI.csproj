@@ -77,6 +77,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Convertors\InfoTypeToColorConvertor.cs" />
     <Compile Include="Models\LogModel.cs" />
     <Compile Include="Models\SettingsModel.cs" />
     <Compile Include="ViewModels\LogViewModel.cs" />
@@ -139,7 +140,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Communication\" />
-    <Folder Include="Convertors\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Communication\Communication.csproj">
@@ -149,6 +149,10 @@
     <ProjectReference Include="..\ImageService.Infrastructure\Infrastructure.csproj">
       <Project>{a4d42a93-7dff-4cf7-979c-7fc64b305b49}</Project>
       <Name>Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImageService.Logging\ImageService.Logging.csproj">
+      <Project>{8150A492-E868-4220-BBE8-9451525F24DF}</Project>
+      <Name>ImageService.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

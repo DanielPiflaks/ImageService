@@ -1,7 +1,8 @@
 ﻿using ImageService.Commands;
+using ImageService.Infrastructure.Enums;
 using ImageService.Server;
 using Infrastructure.Enums;
-using Infrastructure.Modal;
+using Infrastructure.Event;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,8 @@ namespace ImageService.Commands
                 resultString = "Handler " + removeHandler + " can't be removed. Check log.";
             }
 
-            CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.GetConfigCommand, args, "");
+            ConfigurationRecieveEventArgs command =
+                new ConfigurationRecieveEventArgs((int)ConfigurationEnum.RemoveHandler, args);
             string message = JsonConvert.SerializeObject(command);
 
             HandleGuiRequest.InvokeEvent(message);
