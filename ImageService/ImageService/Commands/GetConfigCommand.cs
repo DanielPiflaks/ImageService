@@ -14,25 +14,27 @@ namespace ImageService.Commands
             try
             {
                 List<string> sendArgs = new List<string>();
-                //Split handlers by ;
+                //Get parameters from app config
                 sendArgs.Add(ConfigurationManager.AppSettings.Get("OutputDir"));
                 sendArgs.Add(ConfigurationManager.AppSettings.Get("SourceName"));
                 sendArgs.Add(ConfigurationManager.AppSettings.Get("LogName"));
                 sendArgs.Add(ConfigurationManager.AppSettings.Get("ThumbnailSize"));
-
+                //Split handlers by ;
                 string[] handlers = HandlerListManager.GetHandlerListManager().Handlers;
+                //Convert string array into list.
                 for (int i = 0; i < handlers.Length; i++)
                 {
                     sendArgs.Add(handlers[i]);
                 }
-
+                //Create recieve command.
                 ConfigurationRecieveEventArgs configurationEvent =
                     new ConfigurationRecieveEventArgs((int)ConfigurationEnum.SettingsConfiguration, sendArgs.ToArray());
+                //Serialize it.
                 string output = JsonConvert.SerializeObject(configurationEvent);
                 result = true;
                 return output;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = false;
                 return "Couldn't get settings propetries.";

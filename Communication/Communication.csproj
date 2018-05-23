@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\IHandleClient.cs" />
+    <Compile Include="Interfaces\ITCPClientChannel.cs" />
+    <Compile Include="Interfaces\ITCPServerChannel.cs" />
     <Compile Include="TCPClientChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TCPServerChannel.cs" />

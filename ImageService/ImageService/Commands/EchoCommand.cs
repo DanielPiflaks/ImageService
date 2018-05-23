@@ -14,8 +14,10 @@ namespace ImageService.Commands
     {
         public string Execute(string[] args, out bool result)
         {
+            //Create result command.
             ConfigurationRecieveEventArgs command =
                  new ConfigurationRecieveEventArgs((int)ConfigurationEnum.Ack, args);
+            //Serialize it.
             string output = JsonConvert.SerializeObject(command);
             result = true;
             return output;

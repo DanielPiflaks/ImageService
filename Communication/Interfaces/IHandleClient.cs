@@ -10,6 +10,10 @@ namespace Communication.Interfaces
 {
     public interface IHandleClient
     {
+          /// <summary>
+          /// Handles client.
+          /// </summary>
+          /// <param name="client">Client to handle.</param>
           void handle(TcpClient client);
     }
 }
