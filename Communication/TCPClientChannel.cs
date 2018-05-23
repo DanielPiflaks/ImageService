@@ -14,8 +14,8 @@ namespace Communication
 {
     public class TCPClientChannel
     {
-        public const string IP = "10.0.0.138";
-        public const int PORT = 5322;
+        public const string IP = "10.0.0.49";
+        public const int PORT = 8000;
 
         //members.
         private static TCPClientChannel clientTcp;
@@ -38,7 +38,9 @@ namespace Communication
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(IP), PORT);
             TcpClient client = new TcpClient();
+           
             client.Connect(ep);
+
 
             stm = client.GetStream();
         }
