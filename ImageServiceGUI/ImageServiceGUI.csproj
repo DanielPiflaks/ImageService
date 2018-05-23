@@ -140,9 +140,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Communication\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Communication\Communication.csproj">
       <Project>{546b3913-c4f1-4b96-937f-eb7efb8c39b8}</Project>
