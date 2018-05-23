@@ -55,9 +55,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HandleGuiRequest.cs" />
-    <Compile Include="HandlerListManager.cs" />
-    <Compile Include="ImageService\Commands\CloseCommand.cs" />
+    <Compile Include="ImageService\ClientHandler\HandleGuiRequest.cs" />
+    <Compile Include="ImageService\ClientHandler\HandlerListManager.cs" />
     <Compile Include="ImageService\Commands\CloseHandlerCommand.cs" />
     <Compile Include="ImageService\Commands\EchoCommand.cs" />
     <Compile Include="ImageService\Commands\GetConfigCommand.cs" />
