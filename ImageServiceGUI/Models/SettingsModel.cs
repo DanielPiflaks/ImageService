@@ -75,27 +75,42 @@ namespace ImageServiceGUI.Models
             }
         }
         #endregion
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public SettingsModel()
         {
+            //Create command.
             CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.GetConfigCommand, null, "");
+            //Add function to event.
             TCPClientChannel.GetTCPClientChannel().NotifyMessage += UpdateByNotification;
+            //Send command.
             string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
+            //Update notification.
             UpdateByNotification(settingsMsg);
         }
 
+        /// <summary>
+        /// Update settings model by given message.
+        /// </summary>
+        /// <param name="message"></param>
         public void UpdateByNotification(string message)
         {
-            ConfigurationRecieveEventArgs configurationNotify =
-                JsonConvert.DeserializeObject<ConfigurationRecieveEventArgs>(message);
+
             try
             {
+                //Deserialize message.
+                ConfigurationRecieveEventArgs configurationNotify =
+                    JsonConvert.DeserializeObject<ConfigurationRecieveEventArgs>(message);
+                //Set by given enum ID.
                 switch ((ConfigurationEnum)configurationNotify.ConfigurationID)
                 {
                     case ConfigurationEnum.SettingsConfiguration:
+                        //Set settings by arguments.
                         SetSettings(configurationNotify.Args);
                         break;
                     case ConfigurationEnum.RemoveHandler:
+                        //Check if wanted handler to remove is in Handlers and remove it.
                         if (Handlers.Contains(configurationNotify.Args[0]))
                         {
                             Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -113,28 +128,36 @@ namespace ImageServiceGUI.Models
                 throw new Exception(e.Message);
             }
         }
-
+        /// <summary>
+        /// Sets settings.
+        /// </summary>
+        /// <param name="settings">Given settings.</param>
         public void SetSettings(string[] settings)
         {
             Handlers = new ObservableCollection<string>();
-
+            //Get all settings from array.
             OutputDir = settings[0];
             ThumbnailSize = settings[1];
             LogName = settings[2];
             SourceName = settings[3];
-
+            //Add handlers to observable collection.
             for (int i = 4; i < settings.Length; i++)
             {
                 Handlers.Add(settings[i]);
             }
         }
-
+        /// <summary>
+        /// Remove handler from observable collection.
+        /// </summary>
+        /// <param name="handler">Handler to remove.</param>
         public void RemoveHandler(string handler)
         {
             string[] args = { handler };
+            //Create command for closing handler.
             CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.CloseHandler, args, "");
+            //Send command.
             TCPClientChannel.GetTCPClientChannel().Send(command);
-
+            //Remove handler from list.
             Handlers.Remove(handler);
         }
 

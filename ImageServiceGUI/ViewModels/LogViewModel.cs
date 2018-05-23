@@ -25,10 +25,14 @@ namespace ImageServiceGUI.ViewModels
             set { this.logView = value; }
         }
         #endregion
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public LogViewModel()
         {
+            //Create model.
             LogModel = new LogModel();
+            //Set property changed.
             LogModel.PropertyChanged += delegate (Object sender, PropertyChangedEventArgs e)
             {
                 OnPropertyChanged(e.PropertyName);
