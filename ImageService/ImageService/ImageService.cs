@@ -14,10 +14,11 @@ using ImageService.Modal;
 using ImageService.Logging;
 using System.Configuration;
 using ImageService.Logging.Modal;
-using Communication;
+//using Communication;
 using System.Threading;
 using System.Net.Sockets;
 using System.IO;
+using Communication;
 
 namespace ImageService
 {
@@ -28,6 +29,7 @@ namespace ImageService
         private IImageServiceModal m_imageServiceModal;
         private IImageController m_controller;
         private ILoggingService m_loggingService;
+        private TCPServerChannel m_tcpServer;
         #endregion
 
         public enum ServiceState
@@ -100,20 +102,18 @@ namespace ImageService
                 //Create image server.
                 m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
                 m_loggingService.Log("Image service created", Logging.Modal.MessageTypeEnum.INFO);
-            }
-            catch
-            {
-                m_loggingService.Log("Failed creating image service", Logging.Modal.MessageTypeEnum.FAIL);
-            }
-        }
 
-        public static void ListenToClients(TCPServerChannel tcpServerChannel)
-        {
-            while (true)
+                HandleGuiRequest handleGuiRequest = new HandleGuiRequest(m_loggingService, m_imageServer);
+                m_tcpServer = new TCPServerChannel(8000, m_loggingService, handleGuiRequest);
+
+                handleGuiRequest.NotifyClients += m_tcpServer.NotifyClientsOnChange;
+                m_loggingService.NotifyClients += m_tcpServer.NotifyClientsOnChange;
+
+                m_tcpServer.Start();
+            }
+            catch (Exception e)
             {
-                Tuple<CommandMessage, Stream> receivedMsg = tcpServerChannel.StartListening();
-                var t = new Thread(() => HandleGuiRequest.handle(receivedMsg.Item1, tcpServerChannel, receivedMsg.Item2));
-                //t.Start();
+                m_loggingService.Log("Failed creating image service, exception: " + e.Message, Logging.Modal.MessageTypeEnum.FAIL);
             }
         }
 
@@ -136,10 +136,9 @@ namespace ImageService
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
-            TCPServerChannel tcpServerChannel = new TCPServerChannel(5322, m_loggingService);
-            var t = new Thread(() => ListenToClients(tcpServerChannel));
-            t.Start();
+
         }
+
 
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
@@ -161,7 +160,7 @@ namespace ImageService
             {
                 m_imageServer.OnCloseServer();
             }
- 
+
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);

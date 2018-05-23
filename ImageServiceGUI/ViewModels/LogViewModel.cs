@@ -5,18 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ImageServiceGUI.Models;
+using System.Collections.ObjectModel;
+using ImageService.Logging.Modal;
 
 namespace ImageServiceGUI.ViewModels
 {
     public class LogViewModel : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged(String a)
+        #region Properties
+        public ObservableCollection<MessageRecievedEventArgs> LogMessages
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(a));
-            }
+            get { return LogModel.LogMessages; }
         }
 
         private LogModel logView;
@@ -25,15 +24,26 @@ namespace ImageServiceGUI.ViewModels
             get { return this.logView; }
             set { this.logView = value; }
         }
+        #endregion
 
         public LogViewModel()
         {
-            this.LogModel = new LogModel();
-            LogModel.PropertyChanged += delegate (Object sender, PropertyChangedEventArgs type)
+            LogModel = new LogModel();
+            LogModel.PropertyChanged += delegate (Object sender, PropertyChangedEventArgs e)
             {
-                NotifyPropertyChanged(type.PropertyName);
+                OnPropertyChanged(e.PropertyName);
             };
         }
-        
+
+        #region Notify Changed
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(String a)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(a));
+            }
+        }
+        #endregion
     }
 }

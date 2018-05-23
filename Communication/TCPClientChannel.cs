@@ -7,20 +7,23 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
-using ImageService.Infrastructure.Enums;
+using Infrastructure.Enums;
 using Newtonsoft.Json;
+using Infrastructure.Event;
 
 namespace Communication
 {
     public class TCPClientChannel
     {
-        public const string IP = "10.0.0.49";
+        public const string IP = "127.0.0.1";
         public const int PORT = 8000;
-
+    
         //members.
         private static TCPClientChannel clientTcp;
         private TcpClient m_tcpClient;
-        private Stream stm;
+        private bool m_stopListening;
+        public delegate void NotifyIncomingMessage(string message);
+        public event NotifyIncomingMessage NotifyMessage;
 
         /// <summary>
         /// properties.
@@ -37,12 +40,9 @@ namespace Communication
         private TCPClientChannel()
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(IP), PORT);
-            TcpClient client = new TcpClient();
-           
-            client.Connect(ep);
-
-
-            stm = client.GetStream();
+            TCPClient = new TcpClient();
+            TCPClient.Connect(ep);
+            m_stopListening = false;
         }
 
         public static TCPClientChannel GetTCPClientChannel()
@@ -61,30 +61,84 @@ namespace Communication
             }
         }
 
-        public void Send(CommandEnum cmd, List<String> args)
+        public void Send(CommandRecievedEventArgs command)
         {
-            using (BinaryWriter writer = new BinaryWriter(stm))
+            Task task = new Task(() =>
             {
+                try
+                {
+                    NetworkStream stream = TCPClient.GetStream();
+                    BinaryWriter writer = new BinaryWriter(stream);
+                    String JsonMsgSend = JsonConvert.SerializeObject(command);
+                    writer.Write(JsonMsgSend);
+                }
+                catch (Exception e)
+                {
 
-                CommandMessage msg = new CommandMessage(cmd, args);
-                String JsonMsg = JsonConvert.SerializeObject(msg);
-                writer.Write(JsonMsg);
-            }
+                }
+
+            });
+
+            task.Start();
+            task.Wait();
         }
 
-        public string SendAndReceive(CommandEnum cmd, List<String> args)
+        public string Receive()
         {
-            Send(cmd, args);
-            return receive();
+            NetworkStream stream = TCPClient.GetStream();
+            BinaryReader reader = new BinaryReader(stream);
+
+            string message = reader.ReadString();
+            return message;
         }
 
-        public string receive()
+        public string SendAndReceive(CommandRecievedEventArgs command)
         {
-            using (BinaryReader reader = new BinaryReader(stm))
+            String message = null;
+
+            //Create new task to handle execution of command.
+            Task task = new Task(() =>
             {
-                String JsonMsg = reader.ReadString();
-                return JsonMsg;
-            }
+                try
+                {
+                    Send(command);
+                    message = Receive();
+                }
+                catch (Exception e)
+                {
+                    
+                }
+
+            });
+
+            task.Start();
+            task.Wait();
+
+            return message;
+        }
+      
+        public void ListenToServer()
+        {
+            String message = null;
+
+            //Create new task to handle execution of command.
+            Task task = new Task(() =>
+            {
+                try
+                {
+                    while (!m_stopListening)
+                    {
+                        message = Receive();
+                        NotifyMessage?.Invoke(message);
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            
+            });
+            task.Start();
         }
 
     }

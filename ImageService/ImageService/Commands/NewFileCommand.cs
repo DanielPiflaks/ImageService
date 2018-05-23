@@ -1,4 +1,4 @@
-﻿using ImageService.Infrastructure;
+﻿using Infrastructure;
 using ImageService.Modal;
 using System;
 using System.Collections.Generic;

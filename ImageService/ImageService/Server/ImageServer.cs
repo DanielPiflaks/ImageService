@@ -1,6 +1,6 @@
 ﻿using ImageService.Controller;
 using ImageService.Controller.Handlers;
-using ImageService.Infrastructure.Enums;
+using Infrastructure.Enums;
 using ImageService.Logging;
 using ImageService.Modal;
 using System;
@@ -10,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using ImageService.Logging.Modal;
+//using Communication;
+using System.Threading;
+using Infrastructure.Event;
 
 namespace ImageService.Server
 {
@@ -18,6 +21,7 @@ namespace ImageService.Server
         #region Members
         private IImageController m_controller;
         private ILoggingService m_logging;
+        private List<IDirectoryHandler> m_handlers;
         #endregion
 
         #region Properties
@@ -57,6 +61,7 @@ namespace ImageService.Server
         {
             Controller = controller;
             Logging = logging;
+            m_handlers = new List<IDirectoryHandler>();
             //For each path in handlers pathes.
             foreach (var path in handlersPathes)
             {
@@ -64,12 +69,33 @@ namespace ImageService.Server
                 m_logging.Log("Creating handler for: " + path, MessageTypeEnum.INFO);
                 //Create handler.
                 IDirectoryHandler handler = new DirectoyHandler(m_controller, m_logging, path);
+                m_handlers.Add(handler);
                 //Add events.
                 CommandRecieved += handler.OnCommandRecieved;
                 CloseServer += handler.CloseHandler;
                 //Start handle directory.
                 handler.StartHandleDirectory(path);
             }
+        }
+
+        public bool RemoveHandler(string handler)
+        {
+            foreach (IDirectoryHandler existingHandler in m_handlers)
+            {
+                if (string.Compare(existingHandler.GetHandlerPath(), handler) == 0)
+                {
+                    m_handlers.Remove(existingHandler);
+                    CommandRecieved -= existingHandler.OnCommandRecieved;
+                    CloseServer -= existingHandler.CloseHandler;
+                    existingHandler.CloseHandler(this, null);
+                    //Write to log.
+                    m_logging.Log("Removing handler: " + handler, MessageTypeEnum.INFO);
+                    return true;
+                }
+            }
+            m_logging.Log("Can't remove handler: " + handler + " because it's not exist.",
+                     MessageTypeEnum.WARNING);
+            return false;
         }
 
         /// <summary>

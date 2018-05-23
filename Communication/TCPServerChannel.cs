@@ -1,6 +1,9 @@
-﻿using ImageService.Logging;
+﻿using Communication.Interfaces;
+using ImageService.Logging;
 using ImageService.Logging.Modal;
+using Infrastructure.Event;
 using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,11 +19,15 @@ namespace Communication
     public class TCPServerChannel
     {
         #region Properties
-        // Create a new Mutex. The creating thread does not own the mutex.
-        private static Mutex mut = new Mutex();
-        private static List<Socket> listOfSockets;
         private static TcpListener Listener;
         private static ILoggingService Logging;
+
+        private IHandleClient m_handleClient;
+        public IHandleClient HandleClient
+        {
+            get { return m_handleClient; }
+            set { m_handleClient = value; }
+        }
 
         private int m_port;
         public int Port
@@ -36,54 +43,95 @@ namespace Communication
             set { m_ip = value; }
         }
 
+        private List<TcpClient> m_clientsListeners;
+        private readonly Mutex mutex = new Mutex();
+
         #endregion
 
-        public TCPServerChannel(int port, ILoggingService logging)
+        public TCPServerChannel(int port, ILoggingService logging, IHandleClient handleClient)
         {
-            IP = IPAddress.Parse("0.0.0.0");
+            IP = IPAddress.Parse("127.0.0.1");
             Port = port;
             Logging = logging;
-            IPEndPoint ep = new IPEndPoint(IP, port);
-            Listener = new TcpListener(ep);
-            Listener.Start();
-            //Write to log.
-            //Logging.Log("Creating TCP Server channel", MessageTypeEnum.INFO);
-
+            HandleClient = handleClient;
+            m_clientsListeners = new List<TcpClient>();
         }
 
-        public Tuple<CommandMessage, Stream> StartListening()
+        public void SendMessage(object msg, TcpClient client)
         {
-            Logging.Log("Check", MessageTypeEnum.INFO);
-            TcpClient client = null;
-            try
-            {
-                client = Listener.AcceptTcpClient();
-            }
-            catch (Exception e)
-            {
-                Logging.Log(e.Message, MessageTypeEnum.INFO);
-            }
-            
-            Logging.Log("TCP Starting to listen for clients", MessageTypeEnum.INFO);
-
-            NetworkStream stream = client.GetStream();
-            CommandMessage cmdMessage;
-            using (BinaryReader reader = new BinaryReader(stream))
-            using (BinaryWriter writer = new BinaryWriter(stream))
-            {
-                string commandLine = reader.ReadString();
-                cmdMessage = JsonConvert.DeserializeObject<CommandMessage>(commandLine);
-            }
-        
-            return Tuple.Create<CommandMessage, Stream>(cmdMessage, stream);
-        }
-
-        public void SendMessage(object msg, Stream stream)
-        {
+            using (NetworkStream stream = client.GetStream())
             using (BinaryWriter writer = new BinaryWriter(stream))
             {
                 String JsonMsg = JsonConvert.SerializeObject(msg);
                 writer.Write(JsonMsg);
+            }
+        }
+
+        public void Start()
+        {
+            IPEndPoint ep = new IPEndPoint(IP, Port);
+            Listener = new TcpListener(ep);
+            Listener.Start();
+            //Write to log.
+            Logging.Log("Creating TCP Server channel", MessageTypeEnum.INFO);
+
+            Listener.Start();
+            Logging.Log("Waiting for connections...", MessageTypeEnum.INFO);
+
+            Task task = new Task(() =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        TcpClient client = Listener.AcceptTcpClient();
+                        Logging.Log("Got new connection", MessageTypeEnum.INFO);
+
+                        mutex.WaitOne();
+                        m_clientsListeners.Add(client);
+                        mutex.ReleaseMutex();
+
+                        HandleClient.handle(client);
+                    }
+                    catch (SocketException e)
+                    {
+                        break;
+                    }
+                }
+                Console.WriteLine("Server stopped");
+            });
+            task.Start();
+        }
+
+        public void NotifyClientsOnChange(object sender, ConfigurationRecieveEventArgs e)
+        {
+            try
+            {
+                string message = JsonConvert.SerializeObject(e);
+
+                foreach (TcpClient client in m_clientsListeners)
+                {
+                    new Task(() =>
+                    {
+                        try
+                        {
+                            NetworkStream stream = client.GetStream();
+                            BinaryWriter writer = new BinaryWriter(stream);
+                            mutex.WaitOne();
+                            writer.Write(message);
+                            mutex.ReleaseMutex();
+                        }
+                        catch (Exception ex)
+                        {
+                            m_clientsListeners.Remove(client);
+                        }
+
+                    }).Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex.Message, MessageTypeEnum.FAIL);
             }
         }
     }

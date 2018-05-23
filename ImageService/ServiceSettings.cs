@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using Newtonsoft.Json;
 
 namespace ImageService
 {
@@ -74,7 +75,6 @@ namespace ImageService
             }
         }
         #endregion
-
         private static ServiceSettings serviceSettings;
         /// <summary>
         /// Constructor.
@@ -87,6 +87,16 @@ namespace ImageService
             SourceName = ConfigurationManager.AppSettings.Get("SourceName");
             LogName = ConfigurationManager.AppSettings.Get("LogName");
             m_thumbnailSize = Int32.Parse(ConfigurationManager.AppSettings.Get("ThumbnailSize"));
+        }
+
+        [JsonConstructor]
+        private ServiceSettings(string[] handlers, string outputDir, string sourceName, string logName, int thumbnailSize)
+        {
+            Handlers = handlers;
+            OutputDir = outputDir;
+            SourceName = sourceName;
+            LogName = logName;
+            m_thumbnailSize = thumbnailSize;
         }
 
         /// <summary>
