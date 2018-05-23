@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Infrastructure.Enums;
 using Newtonsoft.Json;
 using Infrastructure.Event;
+using System.Threading;
 
 namespace Communication
 {
@@ -24,6 +25,7 @@ namespace Communication
         private bool m_stopListening;
         public delegate void NotifyIncomingMessage(string message);
         public event NotifyIncomingMessage NotifyMessage;
+        private readonly Mutex mutex = new Mutex();
 
         /// <summary>
         /// properties.
@@ -88,7 +90,9 @@ namespace Communication
             NetworkStream stream = TCPClient.GetStream();
             BinaryReader reader = new BinaryReader(stream);
 
+            //mutex.WaitOne();
             string message = reader.ReadString();
+            //mutex.ReleaseMutex();
             return message;
         }
 
@@ -106,7 +110,7 @@ namespace Communication
                 }
                 catch (Exception e)
                 {
-                    
+                    throw new Exception(e.Message);
                 }
 
             });
@@ -134,7 +138,7 @@ namespace Communication
                 }
                 catch (Exception e)
                 {
-
+                    throw new Exception(e.Message + message);
                 }
             
             });

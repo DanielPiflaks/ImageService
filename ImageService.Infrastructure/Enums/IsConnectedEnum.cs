@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace ImageService.Infrastructure.Enums
 {
-    public enum ConfigurationEnum : int
+    public enum IsConnectedEnum : int
     {
-        SettingsConfiguration,
-        RemoveHandler,
-        LogHistory,
-        NewLogMessageConfiguraton,
-        Ack
+        Connected,
+        NotConnected
     }
 }

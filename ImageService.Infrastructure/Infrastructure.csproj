@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\ConfigurationEnum.cs" />
+    <Compile Include="Enums\IsConnectedEnum.cs" />
     <Compile Include="Event\CommandRecievedEventArgs.cs" />
     <Compile Include="Event\ConfigurationRecieveEventArgs.cs" />
     <Compile Include="Event\DirectoryCloseEventArgs.cs" />

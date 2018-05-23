@@ -45,6 +45,7 @@ namespace Communication
 
         private List<TcpClient> m_clientsListeners;
         private readonly Mutex mutex = new Mutex();
+        //private object locker = new object();
 
         #endregion
 
@@ -57,21 +58,11 @@ namespace Communication
             m_clientsListeners = new List<TcpClient>();
         }
 
-        public void SendMessage(object msg, TcpClient client)
-        {
-            using (NetworkStream stream = client.GetStream())
-            using (BinaryWriter writer = new BinaryWriter(stream))
-            {
-                String JsonMsg = JsonConvert.SerializeObject(msg);
-                writer.Write(JsonMsg);
-            }
-        }
 
         public void Start()
         {
             IPEndPoint ep = new IPEndPoint(IP, Port);
             Listener = new TcpListener(ep);
-            Listener.Start();
             //Write to log.
             Logging.Log("Creating TCP Server channel", MessageTypeEnum.INFO);
 
@@ -120,6 +111,7 @@ namespace Communication
                             mutex.WaitOne();
                             writer.Write(message);
                             mutex.ReleaseMutex();
+                            writer.Flush();
                         }
                         catch (Exception ex)
                         {

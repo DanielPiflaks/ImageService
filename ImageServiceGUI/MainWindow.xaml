@@ -4,15 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageServiceGUI"
+        xmlns:convertors="clr-namespace:ImageServiceGUI.Convertors"
         mc:Ignorable="d"
         xmlns:views="clr-namespace:ImageServiceGUI.Views"
-        Title="MainWindow" Height="350" Width="525" WindowStartupLocation="CenterScreen">
-    <Grid>
+        Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <convertors:ConnectedConvertor x:Key="ConnectedConvertor"/>
+    </Window.Resources>
+    <Grid Background="{Binding Path=VMIsConnected, Converter={StaticResource ConnectedConvertor}}">
         <Grid.RowDefinitions>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TabControl >
-            <TabItem Header="Settings" Height="Auto">
+        <TabControl Background="{Binding Path=VMIsConnected, Converter={StaticResource ConnectedConvertor}}">
+            <TabItem Header="Settings">
                 <views:SettingsView Grid.Row="1"
                                      DataContext="{Binding SettingViewModel}" Height="246" VerticalAlignment="Top">
                 </views:SettingsView>
