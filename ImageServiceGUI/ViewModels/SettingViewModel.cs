@@ -71,27 +71,40 @@ namespace ImageServiceGUI.ViewModels
 
         public ICommand RemoveCommand { get; private set; }
         #endregion
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public SettingViewModel()
         {
+            //Create settings model.
             SettingsModel = new SettingsModel();
             SelectedHandler = null;
+            //Set property change.
             SettingsModel.PropertyChanged +=
               delegate (Object sender, PropertyChangedEventArgs e)
               {
                   OnPropertyChanged(e.PropertyName);
               };
+            //Create delegate command.
             RemoveCommand = new DelegateCommand<object>(RemoveSelectedHandler, CanRemove);
         }
 
-
+        /// <summary>
+        /// Remove selected handler from model.
+        /// </summary>
+        /// <param name="obj"></param>
         public void RemoveSelectedHandler(object obj)
         {
             SettingsModel.RemoveHandler(SelectedHandler);
         }
-
+        /// <summary>
+        /// Function that check if can press on button to remove selected handler.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public bool CanRemove(object obj)
         {
+            //Check if seleceted handler is not null
             if (SelectedHandler != null)
             {
                 return true;

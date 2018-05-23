@@ -33,15 +33,21 @@ namespace ImageServiceGUI.Models
                 OnPropertyChanged("OutputDir");
             }
         }
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public MainWindowModel()
         {
+            //Create command to get echo from server.
             CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.EchoCommand, null, "");
             try
             {
+                //Send echo command.
                 string message = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
+                //Deserialize return object.
                 ConfigurationRecieveEventArgs returnParam =
                      JsonConvert.DeserializeObject<ConfigurationRecieveEventArgs>(message);
+                //Check if we get ack.
                 if ((ConfigurationEnum)returnParam.ConfigurationID == ConfigurationEnum.Ack)
                 {
                     IsConnected = IsConnectedEnum.Connected;
@@ -49,6 +55,7 @@ namespace ImageServiceGUI.Models
             }
             catch (Exception)
             {
+                //If there was exception - it means that there is no connection.
                 IsConnected = IsConnectedEnum.NotConnected;
             }           
         }
