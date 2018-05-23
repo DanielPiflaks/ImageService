@@ -77,8 +77,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Convertors\ConnectedConvertor.cs" />
     <Compile Include="Convertors\InfoTypeToColorConvertor.cs" />
     <Compile Include="Models\LogModel.cs" />
+    <Compile Include="Models\MainWindowModel.cs" />
     <Compile Include="Models\SettingsModel.cs" />
     <Compile Include="ViewModels\LogViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

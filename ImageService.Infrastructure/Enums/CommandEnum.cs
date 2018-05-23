@@ -12,6 +12,7 @@ namespace Infrastructure.Enums
         GetConfigCommand,
         LogCommand,
         CloseCommand,
-        CloseHandler
+        CloseHandler,
+        EchoCommand
     }
 }

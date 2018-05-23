@@ -39,9 +39,8 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Content="Remove" Command="{Binding RemoveCommand}" HorizontalContentAlignment="Center"/>
-            <ListBox Grid.Row="1" ItemsSource="{Binding VMHandlers}" SelectedItem="{Binding SelectedHandler}" Height="auto"/>
+            <ListBox Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"
+                         Height="auto" VerticalAlignment="Stretch" ItemsSource="{Binding VMHandlers}" SelectedItem="{Binding SelectedHandler}"/>
         </Grid>
-
-
     </Grid>
 </UserControl>

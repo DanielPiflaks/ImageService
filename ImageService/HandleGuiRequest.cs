@@ -31,7 +31,8 @@ namespace ImageService
                 { (int) CommandEnum.CloseCommand,  new CloseCommand() },
                 { (int) CommandEnum.GetConfigCommand,  new GetConfigCommand() },
                 { (int) CommandEnum.CloseHandler,  new CloseHandlerCommand(imageServer, this)},
-                { (int) CommandEnum.LogCommand, new LogCommand(logging) }
+                { (int) CommandEnum.LogCommand, new LogCommand(logging) },
+                { (int) CommandEnum.EchoCommand, new EchoCommand() }
             };
             m_logging = logging;
             m_stopTask = false;
@@ -52,17 +53,20 @@ namespace ImageService
                     {
                         NetworkStream stream = client.GetStream();
                         BinaryReader reader = new BinaryReader(stream);
-                        BinaryWriter writer = new BinaryWriter(stream);
 
                         string commandLine = reader.ReadString();
                         CommandRecievedEventArgs wantedCommand = JsonConvert.DeserializeObject<CommandRecievedEventArgs>(commandLine);
                         //Check if wanted command ID is exist.
                         if (commands.ContainsKey(wantedCommand.CommandID))
                         {
+                            BinaryWriter writer = new BinaryWriter(stream);
                             bool result;
                             //Execute command.
                             string resultMessage = commands[wantedCommand.CommandID].Execute(wantedCommand.Args, out result);
-                            writer.Write(resultMessage);
+                            if (((CommandEnum)wantedCommand.CommandID != CommandEnum.CloseHandler) && (((CommandEnum)wantedCommand.CommandID != CommandEnum.CloseCommand)))
+                            {
+                                writer.Write(resultMessage);
+                            }
                         }
                     }
                 }
