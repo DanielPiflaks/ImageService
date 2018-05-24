@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
-using ImageService.Logging.Modal;
 using Infrastructure.Event;
 using Infrastructure.Enums;
 using Communication;

@@ -7,13 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Infrastructure;
 using ImageService.Logging;
-using ImageService.Logging.Modal;
 using System.Text.RegularExpressions;
 using ImageService.Commands;
 using ImageService.Server;
 using Infrastructure.Event;
 using Infrastructure.Enums;
 using Infrastructure.Event;
+using ImageService.Infrastructure.Enums;
 
 namespace ImageService.Controller.Handlers
 {

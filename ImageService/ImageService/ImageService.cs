@@ -13,12 +13,13 @@ using ImageService.Controller;
 using ImageService.Modal;
 using ImageService.Logging;
 using System.Configuration;
-using ImageService.Logging.Modal;
 //using Communication;
 using System.Threading;
 using System.Net.Sockets;
 using System.IO;
 using Communication;
+using Infrastructure.Event;
+using ImageService.Infrastructure.Enums;
 
 namespace ImageService
 {
@@ -101,7 +102,7 @@ namespace ImageService
                 m_controller = new ImageController(m_imageServiceModal);
                 //Create image server.
                 m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
-                m_loggingService.Log("Image service created", Logging.Modal.MessageTypeEnum.INFO);
+                m_loggingService.Log("Image service created", MessageTypeEnum.INFO);
 
                 HandleGuiRequest handleGuiRequest = new HandleGuiRequest(m_loggingService, m_imageServer);
                 m_tcpServer = new TCPServerChannel(8000, m_loggingService, handleGuiRequest);
@@ -113,7 +114,7 @@ namespace ImageService
             }
             catch (Exception e)
             {
-                m_loggingService.Log("Failed creating image service, exception: " + e.Message, Logging.Modal.MessageTypeEnum.FAIL);
+                m_loggingService.Log("Failed creating image service, exception: " + e.Message, MessageTypeEnum.FAIL);
             }
         }
 
@@ -164,7 +165,7 @@ namespace ImageService
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-            m_loggingService.Log("Image service closed.", Logging.Modal.MessageTypeEnum.INFO);
+            m_loggingService.Log("Image service closed.", MessageTypeEnum.INFO);
         }
 
         protected override void OnContinue()

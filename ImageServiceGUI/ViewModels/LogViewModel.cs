@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ImageServiceGUI.Models;
 using System.Collections.ObjectModel;
-using ImageService.Logging.Modal;
+using Infrastructure.Event;
 
 namespace ImageServiceGUI.ViewModels
 {

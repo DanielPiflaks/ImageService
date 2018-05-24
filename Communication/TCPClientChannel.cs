@@ -62,14 +62,14 @@ namespace Communication
             try
             {
                 //Lock mutex.
-                mutexCtorLock.WaitOne();
+                //mutexCtorLock.WaitOne();
                 if (clientTcp == null)
                 {
                     //If object is not exists, create one.
                     clientTcp = new TCPClientChannel();
                 }
                 //Unlock mutex.
-                mutexCtorLock.ReleaseMutex();
+                //mutexCtorLock.ReleaseMutex();
                 return clientTcp;
             }
             catch (Exception e)

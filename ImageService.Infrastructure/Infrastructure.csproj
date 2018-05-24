@@ -50,6 +50,8 @@
     <Compile Include="Event\ConfigurationRecieveEventArgs.cs" />
     <Compile Include="Event\DirectoryCloseEventArgs.cs" />
     <Compile Include="Enums\CommandEnum.cs" />
+    <Compile Include="Event\MessageRecievedEventArgs.cs" />
+    <Compile Include="Enums\MessageTypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

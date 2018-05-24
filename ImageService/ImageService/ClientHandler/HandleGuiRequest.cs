@@ -13,7 +13,7 @@ using Infrastructure.Enums;
 using ImageService.Commands;
 using ImageService.Logging;
 using ImageService.Server;
-using ImageService.Logging.Modal;
+using ImageService.Infrastructure.Enums;
 
 namespace ImageService
 {
@@ -84,6 +84,11 @@ namespace ImageService
                             if (((CommandEnum)wantedCommand.CommandID != CommandEnum.CloseHandler) && (((CommandEnum)wantedCommand.CommandID != CommandEnum.CloseCommand)))
                             {
                                 writer.Write(resultMessage);
+                                //Add client to list if new client finished it's configuration.
+                                if ((CommandEnum)wantedCommand.CommandID == CommandEnum.LogCommand)
+                                {
+                                    TCPServerChannel.AddClientToList(client);
+                                }
                             }
                             else
                             {
@@ -94,7 +99,7 @@ namespace ImageService
                 }
                 catch (Exception e)
                 {
-                    m_logging.Log("Problem in handleing client - " + e.Message, Logging.Modal.MessageTypeEnum.FAIL);
+                    m_logging.Log("Problem in handleing client - " + e.Message, MessageTypeEnum.FAIL);
                 }
 
             });

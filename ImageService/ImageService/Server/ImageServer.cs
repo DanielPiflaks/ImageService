@@ -9,10 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
-using ImageService.Logging.Modal;
 //using Communication;
 using System.Threading;
 using Infrastructure.Event;
+using ImageService.Infrastructure.Enums;
 
 namespace ImageService.Server
 {
