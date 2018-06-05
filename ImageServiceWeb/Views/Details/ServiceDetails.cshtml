@@ -1,0 +1,48 @@
+﻿@model IEnumerable<ImageServiceWeb.Models.Student>
+
+@{
+    ViewBag.Title = "ServiceDetails";
+}
+
+<div class="jumbotron">
+    <h1>Image Web</h1>
+    <p class="lead"></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h3>Image service status: @ViewBag.ImageServiceStatus</h3>
+        <h3>Number of pictures: @ViewBag.NumberOfPictures</h3>
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ID)
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ID)
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+
+    </div>
+</div>

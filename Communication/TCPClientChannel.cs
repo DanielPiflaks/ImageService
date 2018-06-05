@@ -20,7 +20,7 @@ namespace Communication
         //Global parameters.
         public const string IP = "127.0.0.1";
         public const int PORT = 8000;
-    
+
         //members.
         private static TCPClientChannel clientTcp;
         private TcpClient m_tcpClient;
@@ -154,7 +154,7 @@ namespace Communication
             //Return message.
             return message;
         }
-      
+
         /// <summary>
         /// Listen to server.
         /// </summary>
@@ -180,7 +180,7 @@ namespace Communication
                 {
                     throw new Exception(e.Message + message);
                 }
-            
+
             });
             task.Start();
         }
