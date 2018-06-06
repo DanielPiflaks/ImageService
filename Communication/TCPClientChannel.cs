@@ -74,6 +74,7 @@ namespace Communication
             }
             catch (Exception e)
             {
+                clientTcp = null;
                 throw new Exception(e.Message);
             }
         }
@@ -99,7 +100,7 @@ namespace Communication
                 }
                 catch (Exception e)
                 {
-                    throw new Exception(e.Message);
+                    //throw new Exception(e.Message);
                 }
 
             });
@@ -153,6 +154,16 @@ namespace Communication
             task.Wait();
             //Return message.
             return message;
+        }
+
+        public void DisconnectClientChannel()
+        {
+            if (clientTcp != null)
+            {
+                clientTcp.TCPClient.Close();
+                clientTcp = null;
+            }
+
         }
 
         /// <summary>

@@ -20,12 +20,6 @@ namespace ImageServiceWeb.Controllers
             return View(serviceDetails.StudentsList);
         }
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
 
         public ActionResult Contact()
         {

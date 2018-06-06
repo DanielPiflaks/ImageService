@@ -45,6 +45,7 @@ namespace ImageServiceWeb.Models
             CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.EchoCommand, null, "");
             try
             {
+                TCPClientChannel.GetTCPClientChannel().DisconnectClientChannel();
                 //Send echo command.
                 string message = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
                 //Deserialize return object.
