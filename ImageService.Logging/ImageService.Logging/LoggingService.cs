@@ -1,6 +1,5 @@
 ﻿
 using ImageService.Infrastructure.Enums;
-using ImageService.Logging.Modal;
 using Infrastructure.Event;
 using System;
 using System.Collections.Generic;

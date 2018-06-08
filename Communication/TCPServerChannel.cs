@@ -1,6 +1,6 @@
 ﻿using Communication.Interfaces;
+using ImageService.Infrastructure.Enums;
 using ImageService.Logging;
-using ImageService.Logging.Modal;
 using Infrastructure.Event;
 using Newtonsoft.Json;
 //using Newtonsoft.Json;
@@ -43,9 +43,9 @@ namespace Communication
             set { m_ip = value; }
         }
 
-        private List<TcpClient> m_clientsListeners;
-        private readonly Mutex mutex = new Mutex();
-        //private object locker = new object();
+        public static List<TcpClient> ClientsListenersList = new List<TcpClient>();
+        private static readonly Mutex mutexForList = new Mutex();
+        private static readonly Mutex mutexForWrite = new Mutex();
 
         #endregion
 
@@ -62,7 +62,21 @@ namespace Communication
             Port = port;
             Logging = logging;
             HandleClient = handleClient;
-            m_clientsListeners = new List<TcpClient>();
+        }
+
+        /// <summary>
+        /// Adding new client to list of clients.
+        /// </summary>
+        /// <param name="client">Client to add.</param>
+        public static void AddClientToList(TcpClient client)
+        {
+            //Add client to list of clients.
+            mutexForList.WaitOne();
+            if (!ClientsListenersList.Contains(client))
+            {
+                ClientsListenersList.Add(client);
+            }
+            mutexForList.ReleaseMutex();
         }
 
         /// <summary>
@@ -78,7 +92,6 @@ namespace Communication
             Logging.Log("Creating TCP Server channel", MessageTypeEnum.INFO);
             //Start to listen.
             Listener.Start();
-            Logging.Log("Waiting for connections...", MessageTypeEnum.INFO);
             //Create task for listening to clients.
             Task task = new Task(() =>
             {
@@ -88,14 +101,10 @@ namespace Communication
                     {
                         //Accept tcp client.
                         TcpClient client = Listener.AcceptTcpClient();
-                        Logging.Log("Got new connection", MessageTypeEnum.INFO);
-                        //Add client to list of clients.
-                        mutex.WaitOne();
-                        m_clientsListeners.Add(client);
-                        mutex.ReleaseMutex();
+                        Logging.Log("New client accepted", MessageTypeEnum.INFO);
                         //Handle client.
-                        Logging.Log("Start handleing client.", MessageTypeEnum.INFO);
                         HandleClient.handle(client);
+                        Logging.Log("Start handleing new client", MessageTypeEnum.INFO);
                     }
                     catch (SocketException e)
                     {
@@ -117,7 +126,7 @@ namespace Communication
                 //Serialize object in json format for sending it.
                 string message = JsonConvert.SerializeObject(e);
                 //Notify all clients in client list.
-                foreach (TcpClient client in m_clientsListeners)
+                foreach (TcpClient client in ClientsListenersList)
                 {
                     new Task(() =>
                     {
@@ -126,17 +135,16 @@ namespace Communication
                             //Get streamer.
                             NetworkStream stream = client.GetStream();
                             BinaryWriter writer = new BinaryWriter(stream);
-                            mutex.WaitOne();
+                            mutexForWrite.WaitOne();
                             //Write message.
                             writer.Write(message);
-                            mutex.ReleaseMutex();
-                            //writer.Flush();
+                            mutexForWrite.ReleaseMutex();
                         }
                         catch (Exception ex)
                         {
-                            mutex.WaitOne();
-                            m_clientsListeners.Remove(client);
-                            mutex.ReleaseMutex();
+                            mutexForList.WaitOne();
+                            ClientsListenersList.Remove(client);
+                            mutexForList.ReleaseMutex();
                             Logging.Log("Removing client from list because: " + ex.Message, MessageTypeEnum.WARNING);
                         }
 

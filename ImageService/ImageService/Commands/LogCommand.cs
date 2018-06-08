@@ -1,7 +1,6 @@
 ﻿using ImageService.Commands;
 using ImageService.Infrastructure.Enums;
 using ImageService.Logging;
-using ImageService.Logging.Modal;
 using Infrastructure.Event;
 using Newtonsoft.Json;
 using System;

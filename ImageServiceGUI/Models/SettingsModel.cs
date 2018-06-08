@@ -12,7 +12,6 @@ using Infrastructure.Event;
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 using ImageService.Infrastructure.Enums;
-using Infrastructure.Event;
 using System.Windows;
 
 namespace ImageServiceGUI.Models

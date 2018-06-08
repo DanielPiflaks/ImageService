@@ -20,7 +20,7 @@ namespace Communication
         //Global parameters.
         public const string IP = "127.0.0.1";
         public const int PORT = 8000;
-    
+
         //members.
         private static TCPClientChannel clientTcp;
         private TcpClient m_tcpClient;
@@ -62,18 +62,19 @@ namespace Communication
             try
             {
                 //Lock mutex.
-                mutexCtorLock.WaitOne();
+                //mutexCtorLock.WaitOne();
                 if (clientTcp == null)
                 {
                     //If object is not exists, create one.
                     clientTcp = new TCPClientChannel();
                 }
                 //Unlock mutex.
-                mutexCtorLock.ReleaseMutex();
+                //mutexCtorLock.ReleaseMutex();
                 return clientTcp;
             }
             catch (Exception e)
             {
+                clientTcp = null;
                 throw new Exception(e.Message);
             }
         }
@@ -99,7 +100,7 @@ namespace Communication
                 }
                 catch (Exception e)
                 {
-                    throw new Exception(e.Message);
+                    //throw new Exception(e.Message);
                 }
 
             });
@@ -154,7 +155,17 @@ namespace Communication
             //Return message.
             return message;
         }
-      
+
+        public void DisconnectClientChannel()
+        {
+            if (clientTcp != null)
+            {
+                clientTcp.TCPClient.Close();
+                clientTcp = null;
+            }
+
+        }
+
         /// <summary>
         /// Listen to server.
         /// </summary>
@@ -180,7 +191,7 @@ namespace Communication
                 {
                     throw new Exception(e.Message + message);
                 }
-            
+
             });
             task.Start();
         }
