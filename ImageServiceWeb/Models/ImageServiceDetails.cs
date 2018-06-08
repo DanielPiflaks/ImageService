@@ -39,6 +39,8 @@ namespace ImageServiceWeb.Models
 
         public ImageServiceDetails()
         {
+            string message;
+            ConfigurationRecieveEventArgs returnParam;
             UpdateStudentList();
 
             //Create command to get echo from server.
@@ -47,35 +49,40 @@ namespace ImageServiceWeb.Models
             {
                 TCPClientChannel.GetTCPClientChannel().DisconnectClientChannel();
                 //Send echo command.
-                string message = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
+                message = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
                 //Deserialize return object.
-                ConfigurationRecieveEventArgs returnParam =
-                     JsonConvert.DeserializeObject<ConfigurationRecieveEventArgs>(message);
+                returnParam = JsonConvert.DeserializeObject<ConfigurationRecieveEventArgs>(message);
                 //Check if we get ack.
                 if ((ConfigurationEnum)returnParam.ConfigurationID == ConfigurationEnum.Ack)
                 {
                     ImageServiceStatus = "ON";
-                    command = new CommandRecievedEventArgs((int)CommandEnum.GetConfigCommand, null, "");
-                    //Send GetConfig command.
-                    message = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
-                    //Deserialize return object.
-                    returnParam =
-                         JsonConvert.DeserializeObject<ConfigurationRecieveEventArgs>(message);
-                    OutputDirPath = returnParam.Args[0];
-
-                    //Create list of extention
-                    m_filesExtention = new List<string>
-                    {
-                        ".jpg", ".png", ".gif", ".bmp"
-                    };
-
-                    UpdateNumberOfPictures();
                 }
             }
             catch (Exception e)
             {
                 //If there was exception - it means that there is no connection.
                 ImageServiceStatus = "OFF";
+            }
+
+            try
+            {
+                command = new CommandRecievedEventArgs((int)CommandEnum.GetConfigCommand, null, "");
+                //Send GetConfig command.
+                message = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
+                //Deserialize return object.
+                returnParam = JsonConvert.DeserializeObject<ConfigurationRecieveEventArgs>(message);
+                OutputDirPath = returnParam.Args[0];
+                //Create list of extention
+                m_filesExtention = new List<string>
+                    {
+                        ".jpg", ".png", ".gif", ".bmp"
+                    };
+
+                UpdateNumberOfPictures();
+            }
+            catch (Exception)
+            {
+                NumberOfPictures = 0;
             }
         }
 

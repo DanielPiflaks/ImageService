@@ -43,7 +43,6 @@ namespace ImageService.Commands
             if (result)
             {
                 resultString = "Handler " + removeHandler + " removed";
-
             }
             else
             {
@@ -52,9 +51,11 @@ namespace ImageService.Commands
             //Create result command.
             ConfigurationRecieveEventArgs command =
                 new ConfigurationRecieveEventArgs((int)ConfigurationEnum.RemoveHandler, args);
+            //Serialize it.
+            string output = JsonConvert.SerializeObject(command);
             //Invoke with result command.
-            m_handleGui.InvokeEvent(command);
-            return resultString;
+            //m_handleGui.InvokeEvent(command);
+            return output;
         }
     }
 }
