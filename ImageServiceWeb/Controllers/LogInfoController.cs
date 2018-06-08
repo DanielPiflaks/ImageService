@@ -35,8 +35,8 @@ namespace ImageServiceWeb.Controllers
                 List<Log> filteredLogs = new List<Log>();
                 foreach (Log current in logInfoModel.LogMessages)
                 {
-                    int comp = (int) current.Status;
-                    if (comp.ToString() == type)
+                    string comp = current.Status.ToString();
+                    if (comp.Equals(type, StringComparison.OrdinalIgnoreCase))
                     {
                         filteredLogs.Add(current);
                     }

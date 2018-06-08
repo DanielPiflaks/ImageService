@@ -7,7 +7,7 @@
     ViewBag.Title = "LogInfo";
 }
 
-<h2>Log</h2>
+<h2><font color="#a93865" font face="'Courier New'" style="border-bottom:dotted">Log</font></h2>
 
 
 <table class="table">
@@ -16,20 +16,13 @@
             <div>
                 @using (Html.BeginForm("LogInfo", "LogInfo", FormMethod.Post))
                 {
-                    <div>
-                        <br />
-                        @Html.DropDownList("filterType",
-                           EnumHelper.GetSelectList(typeof(Log.MessageType)),
-                           "Type",
-                           new { @class = "form-control" })
-                        <br />
-                        <input type="submit" value="Submit" class="btn-success">
-                    </div>
-                }
-            </div>
+                    <label><font color="#693858">@Html.DisplayNameFor(model => model.Status)</font></label>
+                    <input class="w3-input" type="text" name="filterType">
+                    <input type="submit" value="Submit" class="btn">
+                }</div> 
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Message)
+            <font color="#693858">@Html.DisplayNameFor(model => model.Message)</font>
         </th>
     </tr>
     @foreach (var item in Model)
