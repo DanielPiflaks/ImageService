@@ -18,11 +18,15 @@ namespace ImageServiceWeb.Models
         [Required]
         [DataType(DataType.Text)]
         [Display(Name = "Log Messages")]
+
         public ObservableCollection<Log> LogMessages { get; set; }
         public delegate void NotifyChange();
         public event NotifyChange notify;
         #endregion
 
+        /// <summary>
+        /// constructor.
+        /// </summary>
         public LogInfoModel()
         {
             LogMessages = new ObservableCollection<Log>();
@@ -33,8 +37,6 @@ namespace ImageServiceWeb.Models
                 // Send command and recevie back log history.
                 TCPClientChannel.GetTCPClientChannel().DisconnectClientChannel();
                 string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
-                // Adding notify function.
-                //TCPClientChannel.GetTCPClientChannel().NotifyMessage += UpdateByNotification;
                 // Add log history to log.
                 UpdateByNotification(settingsMsg);
                 //TCPClientChannel.GetTCPClientChannel().ListenToServer();
@@ -45,20 +47,12 @@ namespace ImageServiceWeb.Models
             }
         }
 
-        public List<T> GetEnumList<T>()
-        {
-            T[] array = (T[])Enum.GetValues(typeof(T));
-            List<T> list = new List<T>(array);
-            return list;
-        }
-
         /// <summary>
         /// Update log.
         /// </summary>
         /// <param name="message"> received message</param>
         public void UpdateByNotification(string message)
         {
-
             try
             {
                 // Wrap given message in Json.
@@ -95,8 +89,6 @@ namespace ImageServiceWeb.Models
             Log message =
                 new Log((MessageTypeEnum)int.Parse(newMessage[0]), newMessage[1]);
             // Add it to log messages.
-            //Application.Current.Dispatcher.Invoke(new Action(() =>
-            //{ LogMessages.Insert(0, message); }));
             LogMessages.Insert(0, message);
         }
 
