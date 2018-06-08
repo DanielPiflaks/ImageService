@@ -1,0 +1,47 @@
+﻿@using ImageServiceWeb.Models
+
+@model IEnumerable<ImageServiceWeb.Models.Log>
+
+
+@{
+    ViewBag.Title = "LogInfo";
+}
+
+<h2>Log</h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            <div>
+                @using (Html.BeginForm("LogInfo", "LogInfo", FormMethod.Post))
+                {
+                    <div>
+                        <br />
+                        @Html.DropDownList("filter type",
+                       new SelectList(Enum.GetValues(typeof(Log.MessageType))),
+                       "Type",
+                       new { @class = "form-control" })
+                        <br />
+
+                    </div>
+                }
+            </div>
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Message)
+        </th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Message)
+            </td>
+        </tr>
+    }
+</table>
+
