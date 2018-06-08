@@ -81,13 +81,14 @@ namespace ImageService
                             //Execute command.
                             string resultMessage = commands[wantedCommand.CommandID].Execute(wantedCommand.Args, out result);
                             //Write command or write to log the result by commandID
-                            if (((CommandEnum)wantedCommand.CommandID != CommandEnum.CloseHandler) && (((CommandEnum)wantedCommand.CommandID != CommandEnum.CloseCommand)))
+                            if (((CommandEnum)wantedCommand.CommandID != CommandEnum.CloseCommand))
                             {
                                 writer.Write(resultMessage);
+                                //
                                 //Add client to list if new client finished it's configuration.
-                                if ((CommandEnum)wantedCommand.CommandID == CommandEnum.LogCommand)
+                                if ((CommandEnum)wantedCommand.CommandID == CommandEnum.GetConfigCommand)
                                 {
-                                    TCPServerChannel.AddClientToList(client);
+                                    //TCPServerChannel.AddClientToList(client);
                                 }
                             }
                             else

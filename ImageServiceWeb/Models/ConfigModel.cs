@@ -5,8 +5,10 @@ using Infrastructure.Event;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading;
 using System.Web;
 
 namespace ImageServiceWeb.Models
@@ -17,7 +19,7 @@ namespace ImageServiceWeb.Models
 
         [Required]
         [Display(Name = "Handlers")]
-        public static List<string> Handlers { get; set; }
+        public ObservableCollection<string> Handlers { get; set; }
 
         [Required]
         [Display(Name = "OutputDir")]
@@ -47,24 +49,27 @@ namespace ImageServiceWeb.Models
 
             get; set;
         }
+
         #endregion
         public ConfigModel()
         {
             //Create command.
             CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.GetConfigCommand, null, "");
-            //Add function to event.
-            TCPClientChannel.GetTCPClientChannel().NotifyMessage += UpdateByNotification;
 
             try
             {
+                //Add function to event.
+                //TCPClientChannel.GetTCPClientChannel().NotifyMessage += UpdateByNotification;
+                TCPClientChannel.GetTCPClientChannel().DisconnectClientChannel();
                 //Send command.
                 string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
                 //Update notification.
                 UpdateByNotification(settingsMsg);
+                //TCPClientChannel.GetTCPClientChannel().ListenToServer();
             }
             catch (Exception)
             {
-                string[] emptyArgs= {" ", " ", " ", " "};
+                string[] emptyArgs = { " ", " ", " ", " " };
                 SetSettings(emptyArgs);
             }
         }
@@ -73,7 +78,7 @@ namespace ImageServiceWeb.Models
         /// Update settings model by given message.
         /// </summary>
         /// <param name="message"></param>
-        public void UpdateByNotification(string message)
+        public bool UpdateByNotification(string message)
         {
             try
             {
@@ -106,6 +111,7 @@ namespace ImageServiceWeb.Models
             {
                 throw new Exception(e.Message);
             }
+            return true;
         }
 
         /// <summary>
@@ -114,7 +120,7 @@ namespace ImageServiceWeb.Models
         /// <param name="settings">Given settings.</param>
         public void SetSettings(string[] settings)
         {
-            Handlers = new List<string>();
+            Handlers = new ObservableCollection<string>();
             //Get all settings from array.
             OutputDir = settings[0];
             ThumbnailSize = settings[1];
@@ -125,6 +131,32 @@ namespace ImageServiceWeb.Models
             {
                 Handlers.Add(settings[i]);
             }
+        }
+
+        /// <summary>
+        /// Remove handler from observable collection.
+        /// </summary>
+        /// <param name="handler">Handler to remove.</param>
+        public HandlerRemoval RemoveHandler(string handler)
+        {
+            string[] args = { handler };
+            //Create command for closing handler.
+            CommandRecievedEventArgs command = new CommandRecievedEventArgs((int)CommandEnum.CloseHandler, args, "");
+            //Send command.
+            string returnMessage = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
+            if (UpdateByNotification(returnMessage))
+            {
+                Thread.Sleep(200);
+                if (Handlers.Contains(handler))
+                {
+                    return HandlerRemoval.FailedToRemove;
+                }
+                else
+                {
+                    return HandlerRemoval.Removed;
+                }
+            }
+            return HandlerRemoval.FailedToRemove;
         }
     }
 }

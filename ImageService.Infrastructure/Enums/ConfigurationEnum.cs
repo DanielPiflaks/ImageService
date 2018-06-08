@@ -12,6 +12,7 @@ namespace ImageService.Infrastructure.Enums
         RemoveHandler,
         LogHistory,
         NewLogMessageConfiguraton,
-        Ack
+        Ack,
+        HandlerRemovedConfirm
     }
 }

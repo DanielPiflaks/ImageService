@@ -1,0 +1,27 @@
+﻿@model ImageServiceWeb.Models.ConfigModel
+
+@{
+    ViewBag.Title = "RemovePage";
+
+}
+
+<h2>Are you sure to want to delete selected handler?</h2>
+
+<input type="button" id="btnOk" value="OK" />
+<input type="button" id="btnCancel" value="Cancel" />
+
+<script>
+    $("#btnOk").click(function () {
+        document.getElementById("btnOk").disabled = true;
+        document.getElementById("btnCancel").disabled = true;
+        $.post("@Url.Action("OKClick")", function () {
+            window.location.href = "Config";
+        });
+    });
+
+    $("#btnCancel").click(function () {
+        $.post("@Url.Action("CancelClick")", function () {
+            window.location.href = "Config";
+        });
+    });
+</script>

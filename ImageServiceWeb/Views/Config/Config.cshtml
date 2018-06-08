@@ -1,15 +1,37 @@
-﻿@{
-    ViewBag.Title = "Config";
-}
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
+﻿@model  ImageServiceWeb.Models.ConfigModel
 
-<p>Use this area to provide additional information.</p>
+    @{
+        ViewBag.Title = "Config";
+    }
 
-<button type="button" id="btnStart" style="margin:10px">Get Data</button>
-<script>
-    $("#btnStart").click(function () {
-        document.getElementById("btnStart").disabled = true;
-    });
+    <div class="jumbotron">
+        <h1>Image Web</h1>
+        <p class="lead"></p>
+    </div>
 
-</script>
+
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Output Directory:  @ViewBag.OutputDir</h3>
+            <h3>Source Name:  @ViewBag.ThumbnailSize</h3>
+            <h3>Log Name:   @ViewBag.LogName</h3>
+            <h3>Thumbnail Size:   @ViewBag.SourceName</h3>
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Handlers)
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.Handlers)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(@item, "AskToRemoveHandler", new { handler = item })
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
