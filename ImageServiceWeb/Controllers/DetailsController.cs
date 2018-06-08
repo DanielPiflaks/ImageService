@@ -15,19 +15,18 @@ namespace ImageServiceWeb.Controllers
 
         #endregion
 
+        /// <summary>
+        /// GET student list details.
+        /// </summary>
+        /// <returns></returns>
         public ActionResult ServiceDetails()
         {
             return View(serviceDetails.StudentsList);
         }
 
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
-
+        /// <summary>
+        /// constructor.
+        /// </summary>
         public DetailsController()
         {
             serviceDetails = new ImageServiceDetails();

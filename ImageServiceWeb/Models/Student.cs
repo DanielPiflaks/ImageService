@@ -21,6 +21,12 @@ namespace ImageServiceWeb.Models
         [Display(Name = "LastName")]
         public string LastName { get; set; }
 
+        /// <summary>
+        /// constructor.
+        /// </summary>
+        /// <param name="id">student id</param>
+        /// <param name="firstName">student first name</param>
+        /// <param name="lastName">student last name</param>
         public Student(string id, string firstName, string lastName)
         {
             ID = id;
