@@ -36,6 +36,7 @@ namespace ImageServiceWeb.Controllers
             return RedirectToAction("Config");
         }
 
+        [HttpPost]
         public ActionResult CancelClick()
         {
             return RedirectToAction("Config");

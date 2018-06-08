@@ -19,7 +19,7 @@ namespace ImageServiceWeb.Models
 
         [Required]
         [Display(Name = "Handlers")]
-        public ObservableCollection<string> Handlers { get; set; }
+        public List<string> Handlers { get; set; }
 
         [Required]
         [Display(Name = "OutputDir")]
@@ -120,7 +120,7 @@ namespace ImageServiceWeb.Models
         /// <param name="settings">Given settings.</param>
         public void SetSettings(string[] settings)
         {
-            Handlers = new ObservableCollection<string>();
+            Handlers = new List<string>();
             //Get all settings from array.
             OutputDir = settings[0];
             ThumbnailSize = settings[1];

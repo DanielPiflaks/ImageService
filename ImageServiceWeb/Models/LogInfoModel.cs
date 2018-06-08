@@ -18,14 +18,14 @@ namespace ImageServiceWeb.Models
         [Required]
         [DataType(DataType.Text)]
         [Display(Name = "Log Messages")]
-        public ObservableCollection<Log> LogMessages { get; set; }
+        public List<Log> LogMessages { get; set; }
         public delegate void NotifyChange();
         public event NotifyChange notify;
         #endregion
 
         public LogInfoModel()
         {
-            LogMessages = new ObservableCollection<Log>();
+            LogMessages = new List<Log>();
             try
             {
                 // Set new command for creating log.

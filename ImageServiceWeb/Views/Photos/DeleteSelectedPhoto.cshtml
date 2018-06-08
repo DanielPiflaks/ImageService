@@ -1,0 +1,32 @@
+﻿@model ImageServiceWeb.Models.Photo
+
+
+@{
+    ViewBag.Title = "DeleteSelectedPhoto";
+}
+
+<h2>Are you sure you want to delete selected photo?</h2>
+<div>
+    <img src="@Url.Content(Model.ThumbnailPath)" alt="" class="img-circle" width="242" height="200">
+    <p> Name: @Model.Name </p>
+
+    <input type="button" id="btnOk" value="OK" />
+    <input type="button" id="btnCancel" value="Cancel" />
+</div>
+
+
+<script>
+    $("#btnOk").click(function () {
+        document.getElementById("btnOk").disabled = true;
+        document.getElementById("btnCancel").disabled = true;
+        $.post("@Url.Action("OKClick")", function () {
+            window.location.href = "Photos";
+        });
+    });
+
+    $("#btnCancel").click(function () {
+        $.post("@Url.Action("CancelClick")", function () {
+            window.location.href = "Photos";
+        });
+    });
+</script>

@@ -1,0 +1,27 @@
+﻿@model IEnumerable<ImageServiceWeb.Models.Photo>
+@{
+    ViewBag.Title = "Photos";
+}
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+<div class="container" id="tourpackages-carousel">
+    @foreach (var photo in Model)
+    {
+        <div class="col-xs-18 col-sm-6 col-md-3">
+            <div class="thumbnail">
+                <img src="@Url.Content(photo.ThumbnailPath)" alt="" class="img-circle" width="242" height="200">
+                <div class="caption">
+                    <p> Name: @photo.Name </p>
+                    <p> Year: @photo.Year </p>
+                    <p> Month: @photo.Month </p>
+                    <p>
+                        <a href="@Url.Action("ViewSelectedPhoto", new { selectedPhotoName = photo.Name})" class="btn btn-info btn-xs" role="button">View</a>
+                        <a href="@Url.Action("DeleteSelectedPhoto", new { selectedPhotoName = photo.Name})" class="btn btn-danger btn-xs" role="button">Delete</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

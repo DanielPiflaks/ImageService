@@ -1,0 +1,24 @@
+﻿@model ImageServiceWeb.Models.Photo
+
+@{
+    ViewBag.Title = "ViewSelectedPhoto";
+}
+
+<div>
+   <img src="@Url.Content(Model.OriginSizePath)" >  
+    <h3>
+        <p> Name: @Model.Name </p>
+        <p> Year: @Model.Year </p>
+        <p> Month: @Model.Month </p>
+        <a href="@Url.Action("DeleteSelectedPhoto", new { selectedPhotoName = Model.Name})" class="btn btn-danger btn-xs" role="button">Delete</a>
+        <input type="button" id="btnCancel" value="Cancel" class="btn btn-default btn-xs" />
+    </h3>
+</div>
+
+<script>
+    $("#btnCancel").click(function () {
+        $.post("@Url.Action("CancelClick")", function () {
+            window.location.href = "Photos";
+        });
+    });
+</script>
