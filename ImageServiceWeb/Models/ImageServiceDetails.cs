@@ -37,6 +37,9 @@ namespace ImageServiceWeb.Models
         public List<Student> StudentsList { get; set; }
         #endregion
 
+        /// <summary>
+        /// constructor.
+        /// </summary>
         public ImageServiceDetails()
         {
             string message;
@@ -86,7 +89,9 @@ namespace ImageServiceWeb.Models
             }
         }
 
-
+        /// <summary>
+        /// count number of pictures.
+        /// </summary>
         private void UpdateNumberOfPictures()
         {
             int counter = 0;
@@ -110,17 +115,23 @@ namespace ImageServiceWeb.Models
                     throw new Exception(ex.Message);
                 }
             }
+            // for doubles (thumbnails and original photos).
             counter = counter / 2;
             NumberOfPictures = counter;
         }
 
+        /// <summary>
+        /// update student list.
+        /// </summary>
         private void UpdateStudentList()
         {
             const string studentInfoFile = "studentsInfo.txt";
             StudentsList = new List<Student>();
 
+            // set path for file.
             string path = HttpContext.Current.Server.MapPath("~/App_Data/" + studentInfoFile);
             var lines = File.ReadLines(path);
+            // extract details from file.
             foreach (string line in lines)
             {
                 string[] args = line.Split(' ');

@@ -51,6 +51,9 @@ namespace ImageServiceWeb.Models
         }
 
         #endregion
+        /// <summary>
+        /// constructor.
+        /// </summary>
         public ConfigModel()
         {
             //Create command.

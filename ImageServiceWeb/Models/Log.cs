@@ -17,17 +17,25 @@ namespace ImageServiceWeb.Models
         [Display(Name = "Message")]
         public string Message { get; set; }
 
+        /// <summary>
+        /// constructor.
+        /// </summary>
+        /// <param name="type">type</param>
+        /// <param name="message">message</param>
         public Log(MessageTypeEnum type, string message)
         {
             this.Status = type;
             this.Message = message;
         }
 
+        /// <summary>
+        /// enums list for log status.
+        /// </summary>
         public enum MessageType
         {
             INFO,
-            FAIL,
-            WARNING
+            WARNING,
+            FAIL
         }
     }
 }

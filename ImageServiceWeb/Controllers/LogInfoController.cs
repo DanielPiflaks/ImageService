@@ -11,38 +11,57 @@ namespace ImageServiceWeb.Controllers
     {
         LogInfoModel logInfoModel;
 
-        // GET: Log
+        /// <summary>
+        /// GET: Log- case of no params
+        /// </summary>
         public ActionResult LogInfo()
         {
+            // return log messages.
             return View(logInfoModel.LogMessages);
         }
 
+        /// <summary>
+        /// constructor.
+        /// </summary>
         public LogInfoController()
         {
             logInfoModel = new LogInfoModel();
         }
 
+        /// <summary>
+        /// in case of user ask to filter log messages by type.
+        /// </summary>
+        /// <param name="form"> wanted type for filtering from user.</param>
+        /// <returns> filterd log messages to view.</returns>
         [HttpPost]
-        public ActionResult Logs(FormCollection form)
+        // GET: Log- case of params.
+        public ActionResult LogInfo(FormCollection form)
         {
-            string type = form["type"].ToString();
-            if (type == "Type")
+            // cast input to string.
+            string type = form["filterWantedType"];
+            // in case of empty choice.
+            if (type == "")
             {
+                //return all log messages.
                 return View(logInfoModel.LogMessages);
             }
             else
             {
-                int i = 0;
+                // set new list of logs.
                 List<Log> filteredLogs = new List<Log>();
-                while (logInfoModel.LogMessages != null)
+                // run over log messages.
+                foreach (Log current in logInfoModel.LogMessages)
                 {
-                    Log current = logInfoModel.LogMessages[i];
-                    if (current.Status.ToString() == type)
+                    // extract current log type.
+                    string comp = current.Status.ToString();
+                    // compare with user choice (ignore upper-lower letters).
+                    if (comp.Equals(type, StringComparison.OrdinalIgnoreCase))
                     {
+                        // if equal- add to new list of logs.
                         filteredLogs.Add(current);
                     }
-                    i++;
                 }
+                //return new list.
                 return View(filteredLogs);
             }
         }
