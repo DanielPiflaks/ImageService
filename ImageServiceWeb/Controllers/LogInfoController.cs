@@ -23,25 +23,23 @@ namespace ImageServiceWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Logs(FormCollection form)
+        public ActionResult LogInfo(FormCollection form)
         {
-            string type = form["type"].ToString();
-            if (type == "Type")
+            string type = form["filterType"];
+            if (type == "")
             {
                 return View(logInfoModel.LogMessages);
             }
             else
             {
-                int i = 0;
                 List<Log> filteredLogs = new List<Log>();
-                while (logInfoModel.LogMessages != null)
+                foreach (Log current in logInfoModel.LogMessages)
                 {
-                    Log current = logInfoModel.LogMessages[i];
-                    if (current.Status.ToString() == type)
+                    int comp = (int) current.Status;
+                    if (comp.ToString() == type)
                     {
                         filteredLogs.Add(current);
                     }
-                    i++;
                 }
                 return View(filteredLogs);
             }

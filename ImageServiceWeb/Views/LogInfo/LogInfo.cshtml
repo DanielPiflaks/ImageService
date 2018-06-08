@@ -18,12 +18,12 @@
                 {
                     <div>
                         <br />
-                        @Html.DropDownList("filter type",
-                       new SelectList(Enum.GetValues(typeof(Log.MessageType))),
-                       "Type",
-                       new { @class = "form-control" })
+                        @Html.DropDownList("filterType",
+                           EnumHelper.GetSelectList(typeof(Log.MessageType)),
+                           "Type",
+                           new { @class = "form-control" })
                         <br />
-
+                        <input type="submit" value="Submit" class="btn-success">
                     </div>
                 }
             </div>

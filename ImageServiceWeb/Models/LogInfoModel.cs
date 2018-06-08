@@ -34,10 +34,10 @@ namespace ImageServiceWeb.Models
                 TCPClientChannel.GetTCPClientChannel().DisconnectClientChannel();
                 string settingsMsg = TCPClientChannel.GetTCPClientChannel().SendAndReceive(command);
                 // Adding notify function.
-                TCPClientChannel.GetTCPClientChannel().NotifyMessage += UpdateByNotification;
+                //TCPClientChannel.GetTCPClientChannel().NotifyMessage += UpdateByNotification;
                 // Add log history to log.
                 UpdateByNotification(settingsMsg);
-                TCPClientChannel.GetTCPClientChannel().ListenToServer();
+                //TCPClientChannel.GetTCPClientChannel().ListenToServer();
             }
             catch (Exception)
             {

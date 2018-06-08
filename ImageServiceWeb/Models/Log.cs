@@ -26,8 +26,8 @@ namespace ImageServiceWeb.Models
         public enum MessageType
         {
             INFO,
-            FAIL,
-            WARNING
+            WARNING,
+            FAIL
         }
     }
 }
