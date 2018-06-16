@@ -20,6 +20,7 @@ using System.IO;
 using Communication;
 using Infrastructure.Event;
 using ImageService.Infrastructure.Enums;
+using ImageService.ClientHandler;
 
 namespace ImageService
 {
@@ -104,10 +105,10 @@ namespace ImageService
                 m_imageServer = new ImageServer(m_controller, m_loggingService, serviceSettings.Handlers);
                 m_loggingService.Log("Image service created", MessageTypeEnum.INFO);
 
-                HandleGuiRequest handleGuiRequest = new HandleGuiRequest(m_loggingService, m_imageServer);
-                m_tcpServer = new TCPServerChannel(8000, m_loggingService, handleGuiRequest);
+                HandleAndroidClient handleAndroidRequest = new HandleAndroidClient(m_loggingService, m_imageServiceModal, serviceSettings.Handlers[0]);
+                m_tcpServer = new TCPServerChannel(1102, m_loggingService, handleAndroidRequest);
 
-                handleGuiRequest.NotifyClients += m_tcpServer.NotifyClientsOnChange;
+                //handleGuiRequest.NotifyClients += m_tcpServer.NotifyClientsOnChange;
                 m_loggingService.NotifyClients += m_tcpServer.NotifyClientsOnChange;
 
                 m_tcpServer.Start();

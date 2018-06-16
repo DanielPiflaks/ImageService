@@ -56,9 +56,10 @@ namespace Communication
         /// <param name="logging">Logging.</param>
         /// <param name="handleClient">Client handler class.</param>
         public TCPServerChannel(int port, ILoggingService logging, IHandleClient handleClient)
-        {   
+        {
             //Set ip to be local host.
             IP = IPAddress.Parse("127.0.0.1");
+
             Port = port;
             Logging = logging;
             HandleClient = handleClient;

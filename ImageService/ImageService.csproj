@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImageService\ClientHandler\HandleAndroidClient.cs" />
     <Compile Include="ImageService\ClientHandler\HandleGuiRequest.cs" />
     <Compile Include="ImageService\ClientHandler\HandlerListManager.cs" />
     <Compile Include="ImageService\Commands\CloseHandlerCommand.cs" />
